@@ -1,4 +1,6 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -8,22 +10,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Scanner;
-import java.util.Collections;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class Racko extends JPanel implements MouseListener, ActionListener{
 	private static LinkedList<Card> deck;
 	private static LinkedList<Card> discard;
-	private static Scanner input = new Scanner(System.in);
 	public static boolean playing = false;
 	private static Card[] humanHand;
 	private static Card[] compHand;
@@ -135,14 +132,6 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 				cards[players][i] = deck.removeFirst();
 			}
 		}
-		
-		for (int players = 0; players < 2; players++) {
-			for (int i = 0; i < 10; i++) {
-				System.out.print(cards[players][i].getValue() + " ");
-			}
-			System.out.println();
-		}
-		System.out.println();
 		return cards;
 	}
 
@@ -183,16 +172,8 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 			}
 		}
 		discard.addFirst(rack[index]);
+		//System.out.println("Replace Discard Card: " + discard.peek().getValue());
 		rack[index] = newCard;
-		
-		for (int players = 0; players < 2; players++) {
-			for (int i = 0; i < 10; i++) {
-				System.out.print(rack[i].getValue() + " ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-		
 		return true;
 	}
 
@@ -201,6 +182,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 */
 	public static void add_card_to_discard(Card card) {
 		discard.addFirst(card);
+		//System.out.println("Immediate Discard Card: " + discard.peek().getValue());
 	}
 	
 	/*
@@ -218,7 +200,6 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 			shuffle();
 		}
 
-		System.out.println("Discard Card: " + discard.peek().getValue());
 		int[] bestAscendingHand = new int[10]; // Used to keep track of cards to keep
 
 	        // Marks the cards that make it impossible to win for replacement; otherwise,
@@ -618,7 +599,6 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 				b2.setVisible(true);
 				b3.setVisible(false);
 				status.setText("Your card was replaced.");
-				System.out.println(selected + " " + takeCard.getValue());
 				
 				int index = -1;
 				for (int idx = 0; idx < 10; idx++) {
@@ -674,12 +654,9 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 				b5.setVisible(false);
 				deckPopped = false;
 				takeCard = deck.pop();
-				System.out.println("Card discarded: " + takeCard.getValue());
 				status.setText("Card discarded: " + takeCard.getValue());
 				add_card_to_discard(takeCard);
 				compHand = computer_play(compHand);
-				int discardCard = discard.peek().getValue();
-				System.out.println("Discard Card: " + discardCard);
 				if (deck.size() == 0) {
 					shuffle();
 				}

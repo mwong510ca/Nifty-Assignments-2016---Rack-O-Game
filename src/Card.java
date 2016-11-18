@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,13 +12,9 @@ public class Card {
 	public final String img_file = "card.png";
 	private int pos_x = 30;
 	private int pos_y = 30;
-	private int x;
-	private int y;
 	
 	public Card(int value, int x, int y) {
 		this.value = value;
-		this.x = x;
-		this.y = y;
 		this.pos_x = x;
 		this.pos_y = y;
 		
