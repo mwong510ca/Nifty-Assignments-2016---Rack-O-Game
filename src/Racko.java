@@ -19,39 +19,29 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Racko extends JPanel implements MouseListener, ActionListener{
-	private static LinkedList<Card> deck;
-	private static LinkedList<Card> discard;
-	public static boolean playing = false;
-	private static Card[] humanHand;
-	private static Card[] compHand;
-	private static int selected = 0;
+	private LinkedList<Card> deck;
+	private LinkedList<Card> discard;
+	public boolean playing = false;
+	private Card[] humanHand;
+	private Card[] compHand;
+	private int selected = 0;
 	JButton b1, b2, b3, b4, b5, b6;
 	Card takeCard = null;
 	private BufferedImage img;
 	public final String img_file = "backcard.png";
-	private static boolean deckPopped = false;
+	private boolean deckPopped = false;
 	private JLabel status;
+	private int cardSize = 40;
 
 	public Racko() {
-		boolean userStarts = newGame();
 		status = new JLabel();
 		status.setBorder(BorderFactory.createLineBorder(Color.RED));
 		
-		// Determine who makes the first move
-		if (!userStarts) {
-			status.setText("The computer went first.");
-			System.out.println("The computer went first.");
-			// Check that the deck size isn't 0 before the computer makes a move.
-			compHand = computer_play(compHand);
-		} else {
-			status.setText("You go first.");
-			System.out.println("You go first.");
-		}
-				
+		newGame();
 		makeUI();
 	}
 
-	private static boolean newGame() {
+	private void newGame() {
 		deck = new LinkedList<Card>();
 		discard = new LinkedList<Card>();
 		humanHand = new Card[10];
@@ -71,15 +61,26 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 		for (int i = 0; i < 10; i++) {
 			humanHand[i] = new Card(humanHand[i].getValue(), 350, 350 - (30 * i));
 		}
+		status.setForeground(Color.BLACK);
+		status.setFont(new Font("Arial", Font.PLAIN, 14));
 		
-		return userStarts;
+		// Determine who makes the first move
+		if (!userStarts) {
+			status.setText("The computer went first.");
+			System.out.println("The computer went first.");
+			// Check that the deck size isn't 0 before the computer makes a move.
+			compHand = computer_play(compHand);
+		} else {
+			status.setText("You go first.");
+			System.out.println("You go first.");
+		}
 	}
 	
 	/*
 	 * Shuffle the deck. If the deck size is 0, shuffle the discard pile
 	 * and put it back in the deck.
 	 */
-	public static void shuffle() { 
+	public void shuffle() { 
 		Random rand = new Random();
 		if (deck.size() == 0) {
 			System.out.println(deck.size() + " " + discard.size());
@@ -99,10 +100,10 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	}
 
 	/*
-	 * Create the deck of cards with values 1 through 60
+	 * Create the deck of cards with values 1 through cardSize
 	 */
-	public static void load_deck(LinkedList<Card> deck) {
-		for (int i = 1; i <= 60; i++) {
+	public void load_deck(LinkedList<Card> deck) {
+		for (int i = 1; i <= cardSize; i++) {
 			Card card = new Card(i, 0, 0);
 			deck.add(card);
 		}
@@ -112,7 +113,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 * Check whether the player has racko, meaning that the cards are in
 	 * ascending order from index 0 to 9.
 	 */
-	public static boolean check_racko(Card[] rack) {
+	public boolean check_racko(Card[] rack) {
 		int val = rack[0].getValue();
 		for (int i = 1; i < 10; i++) {
 			if (val < rack[i].getValue()) {
@@ -127,7 +128,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	/*
 	 * Deal the card by popping the top card in the deck.
 	 */
-	public static Card deal_card() {
+	public Card deal_card() {
 		if (deck.isEmpty()) {
 			return null;
 		}
@@ -138,7 +139,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 * Deal the initial hands by alternating between the two hands 
 	 * (the computer's and user's) and distributing cards from the deck.
 	 */
-	public static Card[][] deal_initial_hands() {
+	public Card[][] deal_initial_hands() {
 		Card[][] cards = new Card[2][10];
 		for (int i = 9; i >= 0; i--) {
 			for (int players = 0; players < 2; players++) {
@@ -153,7 +154,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 * random number and letting the user begin if the value is greater
 	 * than 0.5.
 	 */
-	public static boolean does_user_begin() {
+	public boolean does_user_begin() {
 		Random rand = new Random();
 		if (rand.nextInt(2) == 0) {
 			return false;
@@ -164,7 +165,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	/*
 	 * Print card values in the player's hand.
 	 */
-	public static void print_top_to_bottom(Card[] rack) {
+	public void print_top_to_bottom(Card[] rack) {
 		for (Card card : rack) {
 			if (card != null) {
 				System.out.print(card.getValue() + " ");
@@ -177,7 +178,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 * Search through the player's hand and replace the new card with the
 	 * selected card. Throw the selected card to the discard pile.
 	 */
-	public static boolean find_and_replace(Card newCard, int numberOfCard, Card[] rack) {
+	public boolean find_and_replace(Card newCard, int numberOfCard, Card[] rack) {
 		int index = -1;
 		for (int idx = 0; idx < 10; idx++) {
 			if (rack[idx].getValue() == numberOfCard) {
@@ -191,7 +192,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 		return true;
 	}
 
-	public static void printAll() {
+	public void printAll() {
 		
 		if (deck.size() == 0) {
 			System.out.println("deck is empty");
@@ -224,7 +225,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	/*
 	 * Put the card in the discard pile.
 	 */
-	public static void add_card_to_discard(Card card) {
+	public void add_card_to_discard(Card card) {
 		discard.addFirst(card);
 		//System.out.println("Immediate Discard Card: " + discard.peek().getValue());
 	}
@@ -238,7 +239,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 * Determine the computer's strategy. Return the computer's hand after it
 	 * makes its move.
 	 */
-	public static Card[] computer_play(Card[] hand) {
+	public Card[] computer_play(Card[] hand) {
 		printAll();
 		// Check that the deck size isn't 0 before the computer makes a move.
 		int[] bestAscendingHand = new int[10]; // Used to keep track of cards to keep
@@ -246,7 +247,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	    // Marks the cards that make it impossible to win for replacement; otherwise,
 	    // keep the card value the same in the array
 	    for (int i = 0; i < 10; i++) {
-	    	if ((i >= 0 && i < (9 - (60 - hand[i].getValue()))) || 
+	    	if ((i >= 0 && i < (9 - (cardSize - hand[i].getValue()))) || 
 	    			(i <= 9 && hand[i].getValue() < i + 1)) {
 	    		bestAscendingHand[i] = -1;
 	    	} else {
@@ -293,7 +294,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	 * @param lowerVal - value of the lower card
 	 * @return true if there are enough cards that can go between the two cards 
 	 */
-	private static boolean check_if_possible(int hi, int lo, int higherVal, int lowerVal) {
+	private boolean check_if_possible(int hi, int lo, int higherVal, int lowerVal) {
 		// Checks if there are enough possible cards to put between the
 		// lower valued card and higher valued card
 		if (hi - lo > higherVal - lowerVal) {
@@ -308,7 +309,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
      * to be replaced with -1 and return the hand. The cards are compared by which
      * card has the greater range of values.
      */
-    private static int[] find_ascending_hand(int[] hand) {
+    private int[] find_ascending_hand(int[] hand) {
         int[] ascendingHand = new int[10];
         int loIndex = 0;    // Index of the lowest valued card kept at a time
         int lower = 0;      // loIndex + 1 to remain noninclusive of that index
@@ -360,7 +361,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
                                     ascendingHand[j] = -1;
                                 }
                             } else if (i - lower < 9 - i) { // More cards between the card and the last card
-                                if (hand[j] - hand[loIndex] > 60 - hand[i]) {
+                                if (hand[j] - hand[loIndex] > cardSize - hand[i]) {
                                     //Check whether other card has a possible place in the hand
                                     if (check_if_possible(j, lower, hand[j], lowerVal)) {
                                         ascendingHand[i] = -1;
@@ -376,7 +377,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
                             }
                         } else if (j - lower < 9 - j) { // More cards between the card and the last card
                             if (i - lower >= 9 - i) { // More cards between the card and the last KEPT card
-                                if (60 - hand[j] > hand[i] - hand[loIndex]) {
+                                if (cardSize - hand[j] > hand[i] - hand[loIndex]) {
                                     //Check whether other card has a possible place in the hand
                                     if (check_if_possible(j, lower, hand[j], lowerVal)) {
                                         ascendingHand[i] = -1;
@@ -390,7 +391,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
                                     ascendingHand[j] = -1;
                                 }
                             } else if (i - lower < 9 - i) { // More cards between the card and the last card
-                                if (60 - hand[j] > 60 - hand[i]) {
+                                if (cardSize - hand[j] > cardSize - hand[i]) {
                                     //Check whether other card has a possible place in the hand
                                     if (check_if_possible(j, lower, hand[j], lowerVal)) {
                                         ascendingHand[i] = -1;
@@ -428,7 +429,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
     /*
      * Check that the card is within range.
      */
-    private static boolean within_range(int drawCard, int hi, int lo) {
+    private boolean within_range(int drawCard, int hi, int lo) {
         if (drawCard < hi && drawCard > lo) {
             return true;
         }
@@ -440,7 +441,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
      * can go between any two cards in the hand that have cards to be replaced between
      * them.
      */
-    private static boolean determine_use(int value, int[] ascHand) {
+    private boolean determine_use(int value, int[] ascHand) {
         int i = 0;
         int lo = 0;
         int lowerIndex = 0;
@@ -467,9 +468,9 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
                         return true;
                     }
                 } else if ((ascHand[lo] == -1 && within_range(value, ascHand[hi], 0)) || 
-                        (ascHand[hi] == -1 && within_range(value, 61, ascHand[lo]))) {
+                        (ascHand[hi] == -1 && within_range(value, cardSize + 1, ascHand[lo]))) {
                 	// Check looking at the cards from 0 to the current card's value or the
-	                // current card's value to 60
+	                // current card's value to cardSize
 	                
                 	return true;
                 }
@@ -487,7 +488,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
      * already been determined that the card can be used. Look for the range it falls
      * in and place the card next to the card with the closer value.
      */
-    private static int choose_position(int card, int[] bestAscendingHand) {
+    private int choose_position(int card, int[] bestAscendingHand) {
         int i = 0;
         int lo = 0;
         int hi = 0;
@@ -524,9 +525,9 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
             // Determine whether the card should be in the last slot or closer to the
 	        // lower card
 	        } else if (i == 9 && bestAscendingHand[9] == -1) {
-            	if (within_range(card, 61, bestAscendingHand[lo])) {
+            	if (within_range(card, cardSize + 1, bestAscendingHand[lo])) {
 
-                    if (60 - card < card - bestAscendingHand[lo]) {
+                    if (cardSize - card < card - bestAscendingHand[lo]) {
                         bestAscendingHand[9] = card;
                         return 9;
                     } else {
@@ -550,7 +551,9 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	
 	public void makeUI() {
         addMouseListener(this);
-        
+        status.setForeground(Color.BLACK);
+		status.setFont(new Font("Arial", Font.PLAIN, 14));
+		
         b1 = new JButton("Choose Card from Discard Pile");
         b2 = new JButton("Choose Card from Deck");
         b3 = new JButton("Replace with your Selected Card");
@@ -624,7 +627,7 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 			deck.peek();
 			
 		// Select button to replace a card in the hand with the selected card
-		} else if ("switch".equals(e.getActionCommand())) {
+		} else if ("switch".equals(e.getActionCommand()) && takeCard != null && selected != 0) {
 			if (selected != 0) {
 				b1.setVisible(true);
 				b2.setVisible(true);
@@ -652,8 +655,8 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 					b1.setVisible(false);
 					b2.setVisible(false);
 					status.setText("You win!");
-					//status.setForeground(Color.RED);
-					//status.setFont(new Font("Arial", Font.BOLD, 20));
+					status.setForeground(Color.RED);
+					status.setFont(new Font("Arial", Font.BOLD, 20));
 					b6.setVisible(true);
 				}
 					
@@ -665,11 +668,10 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 					b1.setVisible(false);
 					b2.setVisible(false);
 					status.setText("Computer wins!");
-					//status.setForeground(Color.RED);
-					//status.setFont(new Font("Arial", Font.BOLD, 20));
+					status.setForeground(Color.RED);
+					status.setFont(new Font("Arial", Font.BOLD, 20));
 					b6.setVisible(true);
-				}
-				
+				}				
 			}
 		// Select button to keep card drawn from deck
 		} else if ("keep".equals(e.getActionCommand())) {
@@ -698,13 +700,14 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 				b1.setVisible(false);
 				b2.setVisible(false);
 				status.setText("Computer wins!");
-				//status.setForeground(Color.RED);
-				//status.setFont(new Font("Arial", Font.BOLD, 20));
+				status.setForeground(Color.RED);
+				status.setFont(new Font("Arial", Font.BOLD, 20));
 				b6.setVisible(true);
 			}
 			
 		} else if ("newgame".equals(e.getActionCommand())) {
-			boolean userStarts = newGame();
+			newGame();
+			
 			b1.setVisible(true);
 			if (discard.size() == 0) {
 	        	b1.setVisible(false);
@@ -714,17 +717,6 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	        b4.setVisible(false);
 	        b5.setVisible(false);
 	        b6.setVisible(false);
-	        
-	        if (!userStarts) {
-				status.setText("The computer went first.");
-				System.out.println("The computer went first.");
-				// Check that the deck size isn't 0 before the computer makes a move.
-				compHand = computer_play(compHand);
-				b1.setVisible(true);
-			} else {
-				status.setText("You go first.");
-				System.out.println("You go first.");
-			}
 		}
 		
 		repaint();
@@ -776,22 +768,24 @@ public class Racko extends JPanel implements MouseListener, ActionListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		for (int i = 9; i >= 0; i--) {
-			if (selected == 0) {
-				if (e.getX() > humanHand[i].getX() && e.getX() < humanHand[i].getX() + 300
-						&& e.getY() > humanHand[i].getY() && e.getY() < humanHand[i].getY() + 30) {
-					
-					humanHand[i].setY(humanHand[i].getY() - 30);
-					selected = humanHand[i].getValue();
-					repaint();
-				}
-			} else if (selected == humanHand[i].getValue()) {
-				if (e.getX() > humanHand[i].getX() && e.getX() < humanHand[i].getX() + 300
-						&& e.getY() > humanHand[i].getY() && e.getY() < humanHand[i].getY() + 60) {
-					
-					humanHand[i].setY(humanHand[i].getY() + 30);
-					selected = 0;
-					repaint();
+		if (takeCard != null) {
+			for (int i = 9; i >= 0; i--) {
+				if (selected == 0) {
+					if (e.getX() > humanHand[i].getX() && e.getX() < humanHand[i].getX() + 300
+							&& e.getY() > humanHand[i].getY() && e.getY() < humanHand[i].getY() + 30) {
+						
+						humanHand[i].setY(humanHand[i].getY() - 30);
+						selected = humanHand[i].getValue();
+						repaint();
+					}
+				} else if (selected == humanHand[i].getValue()) {
+					if (e.getX() > humanHand[i].getX() && e.getX() < humanHand[i].getX() + 300
+							&& e.getY() > humanHand[i].getY() && e.getY() < humanHand[i].getY() + 60) {
+						
+						humanHand[i].setY(humanHand[i].getY() + 30);
+						selected = 0;
+						repaint();
+					}
 				}
 			}
 		}
