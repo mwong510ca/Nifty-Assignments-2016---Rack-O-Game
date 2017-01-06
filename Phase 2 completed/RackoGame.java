@@ -9,10 +9,11 @@ public class RackoGame implements Runnable {
 		final JFrame frame = new JFrame("Rack-o!");
 		frame.setLocation(0, 0);
 		frame.setLayout(new BorderLayout());
+		frame.setResizable(false);
 		
-		final Racko court = new Racko();
+		//final Racko court = new Racko();
+		final Racko2 court = new Racko2();
 		frame.add(court, BorderLayout.CENTER);
-
 
 		frame.pack();
 		frame.setSize(700, 700);
@@ -26,7 +27,6 @@ public class RackoGame implements Runnable {
 		gameOverFrame.setVisible(true);
 		gameOverFrame.add(gameOverLabel);
 	}
-
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new RackoGame());
