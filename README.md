@@ -7,14 +7,15 @@ Phase 1 - completed on Nov 21, 2016:
 * Add [scoring] as actual card game.  The player get 500 points or over to win.
 
 Phase 2 - completed on Jan 5, 2017.
-* Move codes for computer player in seperate object - completed.
+* Move codes for computer player in seperate object.
 * Write my own computer strategy.
-  1. Choose the cards between current order and even distrubtion.
-  2. Increase the chance to filled the missing card.
-  3. Keep the cards in sequence for bonus points if possible.
+  1. Review the hand with even distrubtion.
+  2. Hold the cards within the range and in ordering.
+  3. Utilize the draw card to increase the chance to filled the missing card.
+  4. Keep the cards in sequence for bonus points if possible.
 
 Phase 3 - in progress.
-* Modify game to support 2 to 4 players. 
+* Modify game to support 2 to 4 players in pyqt5. 
 * Improve my computer strategy by tracing known cards on deck and other player's hand.
 
 [Nifty Assignments 2016]: http://nifty.stanford.edu
