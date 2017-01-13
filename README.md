@@ -13,7 +13,7 @@ Phase 2 - completed on Jan 5, 2017.
   2. Increase the chance to filled the missing card.
   3. Keep the cards in sequence for bonus points if possible.
 
-Phase 3 - pending.
+Phase 3 - in progress.
 * Modify game to support 2 to 4 players. 
 * Improve my computer strategy by tracing known cards on deck and other player's hand.
 
