@@ -23,6 +23,7 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 	private LinkedList<Card> discard;
 	private Card[] humanHand;
 	private Player2 compHand;
+	//private Player2dev2 compHand;
 	 
 	private int selectedSlot = -1;
 	JButton b1, b2, b3, b4, b5, b6, b7;
@@ -37,6 +38,7 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 
 	public Racko2() {
 		compHand = new Player2(cardSize);
+		//compHand = new Player2dev2(cardSize);
 		status = new JLabel();
 		status.setBorder(BorderFactory.createLineBorder(Color.RED));
 		newGame();
@@ -82,7 +84,7 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 		}
 		
 		System.out.print("computer : ");
-		print_top_to_bottom(compHand.getHand());
+		compHand.print();
 		//System.out.print("human    : ");
 		//print_top_to_bottom(humanHand);
 		System.out.println();
@@ -233,11 +235,13 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 	/*
 	 * Print card values in the player's hand.
 	 */
-	public void print_top_to_bottom(Card[] rack) {
-		for (Card card : rack) {
-			if (card != null) {
-				System.out.print(card.getValue() + " ");
-			}
+	public void print_human_hand() {
+		for (Card card : humanHand) {
+			int val = card.getValue();
+			if (val < 10)
+				System.out.print(" " + val + " ");
+			else 
+				System.out.print(val + " ");
 		}
 		System.out.println();
 	}
@@ -285,7 +289,7 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 
 		System.out.println("The computer review " + discard.peek().getValue() + " in discard pile.");
 		System.out.print("computer : ");
-		print_top_to_bottom(compHand.getHand());
+		compHand.print();
 		//System.out.print("human    : ");
 		//print_top_to_bottom(humanHand);
 		System.out.println();
@@ -297,14 +301,14 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 	    if (compHand.determine_use(discard.peek().getValue(), true)) {
 	    	System.out.println("The computer chose " + discard.peek().getValue() + " from the discard pile.");
 	    	Card discardCard = discard.pop();
-	    	Card returnCard = compHand.replace(discardCard);
+	    	Card returnCard = compHand.replace(discardCard, true);
 	    	add_card_to_discard(returnCard);
 	    } else {
 	    	// Take a card from the deck and determine its use
 	    	Card drawCard = deck.pop();
-	    	System.out.println("The computer chose " + drawCard.getValue() + " from the deck pile.");
+	    	System.out.println("The computer chose a card from the deck pile.");
 	    	if (compHand.determine_use(drawCard.getValue(), false)) {
-	    		Card returnCard = compHand.replace(drawCard);
+	    		Card returnCard = compHand.replace(drawCard, false);
 		    	add_card_to_discard(returnCard);	
 	    	} else {
 	    		add_card_to_discard(drawCard);
@@ -333,7 +337,7 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 		*/
 		System.out.println("The computer pleaced " + discard.peek().getValue() + " in discard pile.");
 		System.out.print("computer : ");
-		print_top_to_bottom(compHand.getHand());
+		compHand.print();
 		//System.out.print("human    : ");
 		//print_top_to_bottom(humanHand);
 		System.out.println();
@@ -461,11 +465,10 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 					b7.setVisible(true);
 					
 					System.out.print("computer : ");
-					print_top_to_bottom(compHand.getHand());
+					compHand.printAll();
 					System.out.print("human    : ");
-					print_top_to_bottom(humanHand);
+					print_human_hand();
 					System.out.println("\n-------- Game Ended ---------------\n");
-					System.out.println("\n------ " + playerScore + " vs " + computerScore + " ------\n");
 				} else {
 					status.setText("Round ended - You win!");
 					status.setForeground(Color.RED);
@@ -473,9 +476,9 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 					b6.setVisible(true);
 
 					System.out.print("computer : ");
-					print_top_to_bottom(compHand.getHand());
+					compHand.printAll();
 					System.out.print("human    : ");
-					print_top_to_bottom(humanHand);
+					print_human_hand();
 					System.out.println("\n-------- Round Ended ---------------\n");
 				}
 			} else {					
@@ -503,11 +506,10 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 						b7.setVisible(true);
 						
 						System.out.print("computer : ");
-						print_top_to_bottom(compHand.getHand());
+						compHand.printAll();
 						System.out.print("human    : ");
-						print_top_to_bottom(humanHand);
+						print_human_hand();
 						System.out.println("\n-------- Game Ended ---------------\n");
-						System.out.println("\n------ " + playerScore + " vs " + computerScore + " ------\n");
 					} else {
 						status.setText("Round ended - Computer win!");
 						status.setForeground(Color.RED);
@@ -515,9 +517,9 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 						b6.setVisible(true);
 						
 						System.out.print("computer : ");
-						print_top_to_bottom(compHand.getHand());
+						compHand.printAll();
 						System.out.print("human    : ");
-						print_top_to_bottom(humanHand);
+						print_human_hand();
 						System.out.println("\n-------- Round Ended ---------------\n");
 					}
 				} else if (deck.size() == 0) {
@@ -570,9 +572,9 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 					b7.setVisible(true);
 					
 					System.out.print("computer : ");
-					print_top_to_bottom(compHand.getHand());
+					compHand.printAll();
 					System.out.print("human    : ");
-					print_top_to_bottom(humanHand);
+					print_human_hand();
 					System.out.println("\n-------- Game Ended ---------------\n");
 					System.out.println("\n------ " + playerScore + " vs " + computerScore + " ------\n");
 				} else {
@@ -582,9 +584,9 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
 					b6.setVisible(true);
 					
 					System.out.print("computer : ");
-					print_top_to_bottom(compHand.getHand());
+					compHand.printAll();
 					System.out.print("human    : ");
-					print_top_to_bottom(humanHand);
+					print_human_hand();
 					System.out.println("\n-------- Round Ended ---------------\n");					
 				}				
 			} else if (deck.size() == 0) {
