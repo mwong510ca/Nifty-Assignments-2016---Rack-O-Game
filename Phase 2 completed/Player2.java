@@ -3,18 +3,15 @@ public class Player2 implements Player {
 	private Card[] hand;
 	private int[] groupHand, groupHand1a, groupHand1b;
 	private int[] gapCount, gapCount1a, gapCount1b;
-	private int[] discardReplacement, discard1a, discard1b;
+	private int[] discardReplacement, discard1a, discard1b, drawReplacement;
 	private int[] rangeMax, rangeMax1a, rangeMax1b;
-	private int[] drawReplacement;
 	private byte[] viewable;
-	// 100 curent, 200 good, 300 better, 400 best, 500 final
-	//private boolean[] possibleHand;
 	private final int cardSize;
 	private final int rackSize = 10;
 	private final int cardKey = 100;
 	private final int aveRange;
 	private int offRange;
-	int score;
+	private int inOrder;
 	private int choosePosition;
 
 	public Player2(int size) {
@@ -147,7 +144,7 @@ public class Player2 implements Player {
 			else if (gapCount1b[i] < min1b)
 				min1a = gapCount1b[i];
 		}
-
+				
 		if (count1a > count1b) {
 			System.arraycopy(rangeMax1a, 0, rangeMax, 0, rackSize + 2);
 			System.arraycopy(gapCount1a, 0, gapCount, 0, rackSize);
@@ -159,10 +156,10 @@ public class Player2 implements Player {
 			System.arraycopy(discard1b, 0, discardReplacement, 0, cardSize + 1);
 			System.arraycopy(groupHand1b, 0, groupHand, 0, rackSize);		
 		}
-		score = 0;
+		inOrder = 0;
 		for (int i = 0; i < rackSize; i++) {
 			if (gapCount[i] == 0) {
-				score++;
+				inOrder++;
 			} else 
 				break;
 		}		
@@ -174,7 +171,6 @@ public class Player2 implements Player {
 		}		
 	}
 	
-	// TODO
 	private void review1a(int[] value) {	
 		while (true) {
 			boolean[] scan = new boolean[rackSize];
@@ -247,13 +243,8 @@ public class Player2 implements Player {
 										continue;
 									}
 									
-									if (gapCount1a[i + 1] == 0) {
-										System.out.println("ERROR - recheck B .........");
-										System.exit(1);
-									}
 									rangeMax1a[i + 1] = j - 1;
-									rangeMax1a[i + 2] = j;
-									
+									rangeMax1a[i + 2] = j;									
 									reviewGroup = i + 1;
 									scan[i + 1] = true;
 									break;
@@ -283,21 +274,14 @@ public class Player2 implements Player {
 									
 									if (shift < 1)
 										continue;
-									
-									if (gapCount1a[i - 1] == 0) {
-										System.out.println("ERROR - recheck A .........");
-										System.exit(1);
-									}
-									
+
 									if (i > 1 && gapCount1a[i - 2] > 0) {
 										rangeMax1a[i - 1] = j - 1;
 										rangeMax1a[i] = j;
 									} else {
 										rangeMax1a[i] = j;
 									}
-									//System.exit(1);
 									reviewGroup = i - 1;
-									//gapCount[i - 1] = 0;
 									scan[i - 1] = true;
 									break;
 								}
@@ -365,7 +349,6 @@ public class Player2 implements Player {
 					} 
 				}
 				
-				// ------------------
 				scan[reviewGroup] = true;
 				
 				gapCount1a = new int[rackSize];
@@ -375,8 +358,6 @@ public class Player2 implements Player {
 					}
 				}
 			}
-			
-			//-----------------------------------------
 			
 			boolean completed = true;
 			int i = 0;
@@ -406,7 +387,6 @@ public class Player2 implements Player {
 					if (val == 0) {
 						if (max > min + 1) {
 							completed = false;
-							//System.out.println("TODO A : " + begin + " " + (j) + " " + min + " " + max + " " + total + " " + (total/(j-begin)) );
 							int aveMin = total / (j - begin);
 							int aveMax = aveMin + 1;
 							int numAveMax = total - aveMin * (j - begin);
@@ -420,7 +400,6 @@ public class Player2 implements Player {
 								total -= count;
 								gapCount1a[group] = count;
 								while (count > 0) {
-									//System.out.print(k + " ");
 									if (discard1a[k] < rackSize) {
 										discard1a[k] = group;
 										count--;
@@ -438,10 +417,8 @@ public class Player2 implements Player {
 								group++;
 								numAveMax--;
 							}
-							//System.out.println("\t\t" + j + " " +  group + " " + k + " " + discard1a[k]);
 							while (discard1a[k] > rackSize 
 									&& discard1a[k] != cardKey + j) {
-								//System.out.println("\t\t" + group + " " + k + " " + discard1a[k]);
 								rangeMax1a[group] = k;
 								k++;
 							}							
@@ -454,7 +431,6 @@ public class Player2 implements Player {
 					if (j == rackSize - 1) {
 						if (max > min + 1) {
 							completed = false;
-							//System.out.println("TODO B : " + begin + " " + (j) + " " + min + " " + max + " " + total + " " + (total/(j-begin + 1)) );
 							int aveMin = total / (j - begin + 1);
 							int aveMax = aveMin + 1;
 							int numAveMax = total - aveMin * (j-begin + 1);
@@ -486,7 +462,6 @@ public class Player2 implements Player {
 								while (discard1a[k] > rackSize && k > rangeMax1a[begin - 1] + 1) {
 									for (int pos = 0; pos < rackSize; pos++) {
 										if (hand[pos].getValue() == k) {
-											//System.out.println("\t\tBBB \t\tBBB k " + k + " " + discard1a[k]);
 											if (group > 0 && gapCount1a[group - 1] == 0) {
 												groupHand1a[pos] = group - 1;
 											} else {
@@ -508,8 +483,6 @@ public class Player2 implements Player {
 				}				
 			}
 			
-			//System.out.println("completed : " + completed);
-			//System.exit(1);
 			if (completed) {
 				break;
 			}
@@ -520,7 +493,6 @@ public class Player2 implements Player {
 		while (true) {
 			boolean[] scan = new boolean[rackSize];
 			for (int i = 0; i < rackSize; i++) {
-				//System.out.print(gapCount[i] + " ");
 				if (gapCount1b[i] == 0) {
 					scan[i] = true;
 				}
@@ -589,20 +561,13 @@ public class Player2 implements Player {
 									if (shift < 1)
 										continue;
 									
-									if (gapCount1b[i - 1] == 0) {
-										System.out.println("ERROR - recheck A .........");
-										System.exit(1);
-									}
-									
 									if (i > 1 && gapCount1b[i - 2] > 0) {
 										rangeMax1b[i - 1] = j - 1;
 										rangeMax1b[i] = j;
 									} else {
 										rangeMax1b[i] = j;
 									}
-									//System.exit(1);
 									reviewGroup = i - 1;
-									//gapCount[i - 1] = 0;
 									scan[i - 1] = true;
 									break;
 								}
@@ -614,11 +579,9 @@ public class Player2 implements Player {
 					}
 				}
 
-
 				if (reviewGroup == -1) {
 					for (int i = 1; i < rackSize - 1; i++) {
 						if (!scan[i]) {
-							//System.out.println("E  " + group + " " + rangeMax[i] + " " + rangeMax[i + 1]);
 							int target = cardKey + i + 1;
 							for (int j = rangeMax1b[i] + 1; j <= rangeMax1b[i + 1]; j++) {
 								if (discard1b[j] == target) {
@@ -634,14 +597,9 @@ public class Player2 implements Player {
 										continue;
 									}
 									
-									if (gapCount1b[i + 1] == 0) {
-										System.out.println("ERROR - recheck B .........");
-										System.exit(1);
-									}
 									rangeMax1b[i + 1] = j - 1;
 									rangeMax1b[i + 2] = j;
 									
-									//System.exit(1);
 									reviewGroup = i + 1;
 									scan[i + 1] = true;
 									break;
@@ -710,7 +668,6 @@ public class Player2 implements Player {
 					} 
 				}
 				
-				// ------------------
 				scan[reviewGroup] = true;
 				
 				gapCount1b = new int[rackSize];
@@ -720,10 +677,6 @@ public class Player2 implements Player {
 					}
 				}
 			}
-			
-			//-----------------------------------------
-			
-			//System.exit(1);
 			
 			boolean completed = true;
 			int i = 0;
@@ -753,7 +706,6 @@ public class Player2 implements Player {
 					if (val == 0) {
 						if (max > min + 1) {
 							completed = false;
-							//System.out.println("TODO A : " + begin + " " + (j) + " " + min + " " + max + " " + total + " " + (total/(j-begin)) );
 							int aveMin = total / (j - begin);
 							int aveMax = aveMin + 1;
 							int numAveMax = total - aveMin * (j - begin);
@@ -767,7 +719,6 @@ public class Player2 implements Player {
 								total -= count;
 								gapCount1b[group] = count;
 								while (count > 0) {
-									//System.out.print(k + " ");
 									if (discard1b[k] < rackSize) {
 										discard1b[k] = group;
 										count--;
@@ -785,10 +736,8 @@ public class Player2 implements Player {
 								group++;
 								numAveMax--;
 							}
-							//System.out.println("\t\t" + j + " " +  group + " " + k + " " + discardReplacement[k]);
 							while (discard1b[k] > rackSize 
 									&& discard1b[k] != cardKey + j) {
-								//System.out.println("\t\t" + group + " " + k + " " + discardReplacement[k]);
 								rangeMax1b[group] = k;
 								k++;
 							}							
@@ -801,7 +750,6 @@ public class Player2 implements Player {
 					if (j == rackSize - 1) {
 						if (max > min + 1) {
 							completed = false;
-							//System.out.println("TODO B : " + begin + " " + (j) + " " + min + " " + max + " " + total + " " + (total/(j-begin + 1)) );
 							int aveMin = total / (j - begin + 1);
 							int aveMax = aveMin + 1;
 							int numAveMax = total - aveMin * (j-begin + 1);
@@ -833,7 +781,6 @@ public class Player2 implements Player {
 								while (discard1b[k] > rackSize && k > rangeMax1b[begin - 1] + 1) {
 									for (int pos = 0; pos < rackSize; pos++) {
 										if (hand[pos].getValue() == k) {
-											//System.out.println("\t\tBBB \t\tBBB k " + k + " " + discardReplacement[k]);
 											if (group > 0 && gapCount1b[group - 1] == 0) {
 												groupHand1b[pos] = group - 1;
 											} else {
@@ -855,8 +802,6 @@ public class Player2 implements Player {
 				}				
 			}
 			
-			//System.out.println("completed : " + completed);
-			//System.exit(1);
 			if (completed) {
 				break;
 			}
@@ -949,7 +894,6 @@ public class Player2 implements Player {
 					if (gapCount[i - 1] > 0 && gapCount[i + 2] == 0) {
 					// .... n i0 0 _0 ....
 						if (value[i - 1] > value[i] && value[i - 1] < value[i + 1]) {
-							//System.out.println("D1a " + i);
 							for (int j = value[i] + 1; j < value[i + 1]; j++) {
 								if (discardReplacement[j] == -1) {
 									if (j > value[i - 1]) {
@@ -980,9 +924,7 @@ public class Player2 implements Player {
 						}
 					} else if (gapCount[i - 1] == 0 && gapCount[i + 2] > 0) {
 					// .... 0_ i0 0 n ....
-						// i = 3
 						if (value[i + 2] > value[i] && value[i + 2] < value[i + 1]) {
-							System.out.println("D2a " + i);
 							for (int j = value[i] + 1; j < value[i + 2]; j++) {
 								if (discardReplacement[j] == -1) {
 									gapCount[i + 2]++;
@@ -996,7 +938,6 @@ public class Player2 implements Player {
 								}
 							}
 						} else { 
-							//System.out.println("D2b " + i);
 							int count = 0;
 							for (int j = value[i] + 1; j < value[i + 1]; j++) {
 								if (discardReplacement[j] == -1) {
@@ -1037,7 +978,6 @@ public class Player2 implements Player {
 						}
 												
 						int shift = 0;
-						//System.out.println(i + " : " + value[i] + " " + value[i + 1]);
 						for (int j = rangeMax[i - 1] + 1; j < rangeMax[i + 2]; j++) {
 							if (drawReplacement[j] == -1) {
 								shift++;
@@ -1067,7 +1007,6 @@ public class Player2 implements Player {
 						
 						if (shift > 0) {
 							shift /= 2;
-							//System.out.println(gapCount[i - 1] + " " + gapCount[i + 2] + " shift: " + shift);
 							for (j = value[i + 1] - 1; j > value[i]; j--) {
 								if (drawReplacement[j] == -1) {
 									if (--shift > 0) {
@@ -1082,7 +1021,6 @@ public class Player2 implements Player {
 			} else if (i == 0 && gapCount[0] == 0 && gapCount[1] > 0) {
 			// 0 n 0 .....
 				if (value[1] < value[0]) {
-					System.out.println("A2sp " + i);
 					for (int j = 1; j < value[0]; j++) {
 						if (discardReplacement[j] == -1) {
 							discardReplacement[j] = 0;
@@ -1207,15 +1145,20 @@ public class Player2 implements Player {
 			for (int i = pos; i >= 0 && expand < 6; i--) {
 				if (gapCount[i + 1] == 0 && value[i] + 1 == value[i + 1])
 					break;
-				for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
-					if (discardReplacement[j] == -1) {
-						expand++;
-					}
-				}
 				if (expand < 6) {
 					for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
+						if (discardReplacement[j] < cardKey) {
+							expand++;
+						}
 						if (drawReplacement[j] == -1) {
 							drawReplacement[j] = i;
+							if (offRange < 3) {
+								discardReplacement[j] = i;
+							}
+						} else {
+							if (offRange < 3) {
+								discardReplacement[j] = drawReplacement[j];
+							}
 						}
 					}
 				}
@@ -1234,15 +1177,20 @@ public class Player2 implements Player {
 			for (int i = pos; i <= 9 && expand < 6; i++) {
 				if (gapCount[i - 1] == 0 && value[i] - 1 == value[i - 1])
 					break;
-				for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
-					if (discardReplacement[j] == -1) {
-						expand++;
-					}
-				}
 				if (expand < 6) {
 					for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
+						if (discardReplacement[j] < cardKey) {
+							expand++;
+						}
 						if (drawReplacement[j] == -1) {
 							drawReplacement[j] = i;
+							if (offRange < 3) {
+								discardReplacement[j] = i;
+							}
+						} else {
+							if (offRange < 3) {
+								discardReplacement[j] = drawReplacement[j];
+							}
 						}
 					}
 				}
@@ -1291,7 +1239,6 @@ public class Player2 implements Player {
 											if (seqL > 2) 
 												discardReplacement[value[i] + 1] = i + 1;
 											drawReplacement[value[i] + 1] = i + 1;
-											
 										}
 									}
 								}
@@ -1320,7 +1267,6 @@ public class Player2 implements Player {
 											discardReplacement[value[i] - 1] = i - 1;
 										drawReplacement[value[i] - 1] = i - 1;
 									} else {
-										// 4 5 7 8 .... i = 1
 										if (value[i - 2] + 1 == value[i - 1]) {
 											int seqL = 1;
 											for (int j = i - 2; j >= 0; j--) {
@@ -1345,50 +1291,87 @@ public class Player2 implements Player {
 					}						
 				}
 			}
-		}		
-		
-			}	
+		}				
+	}	
 
-	// TODO
 	public boolean determine_use(int value, boolean isDiscardCard) {
     	boolean secondCheck = goodChoice(value, isDiscardCard);
+    	if (!secondCheck) {
+    		return false;
+    	}
+    	if (choosePosition < 4) {
+    		if (inOrder == 0 && choosePosition > 0) {
+    			int replacement = choosePosition;
+        		int slotCount = 0;
+        		for (int i = 1; i <= value; i++) {
+        			if (discardReplacement[i] < cardKey) {
+        				slotCount++;
+        			}
+        		}
+        		
+            	int adjReplacement = 0;
+            	int count = 3;
+            	for (int i = 0; i < replacement; i++) {
+            		if (gapCount[i] + count < slotCount) {
+            			count += 3; 
+            			adjReplacement++;
+            		} else {
+            			break;
+            		}
+            	}
+            	if (replacement > adjReplacement) {
+            		System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
+            		choosePosition = adjReplacement;
+            	}
+        	} else if (inOrder == 1 && choosePosition > 1 ) {
+        		int replacement = choosePosition;
+        		int slotCount = 0;
+        		for (int i = hand[0].getValue(); i <= value; i++) {
+        			if (discardReplacement[i] < cardKey) {
+        				slotCount++;
+        			}
+        		}
+        		
+        		int adjReplacement = 1;
+            	int count = 0;
+            	for (int i = 1; i < replacement; i++) {
+            		if (gapCount[i] + count < slotCount) {
+            			count += 3; 
+            			adjReplacement++;
+            		} else {
+            			break;
+            		}
+            	}
+            	if (replacement > adjReplacement) {
+            		System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
+            		choosePosition = adjReplacement;
+            	}
+        	}
+    	}
     	
-    	if (secondCheck) {
-    		int currOffRange = offRange;
-    		int replacement = choosePosition;
-    		Card currCard = hand[replacement];
-    		Card tempCard = new Card(value, 0, 0);
-    		replaceCard(tempCard, replacement);
-    		int newOffRange = offRange;
-    		replaceCard(currCard, replacement);
-    		if (newOffRange <= currOffRange) {
-    			return true;
-    		}
+    	int currOffRange = offRange;
+    	int replacement = choosePosition;
+    	Card currCard = hand[replacement];
+    	Card tempCard = new Card(value, 0, 0);
+    	replaceCard(tempCard, replacement);
+    	int newOffRange = offRange;
+    	replaceCard(currCard, replacement);
+    	if (newOffRange <= currOffRange) {
+    		return true;
     	}
     	return false;
     }
 	
     private boolean goodChoice(int value, boolean isDiscardCard) {
     	int replacement = discardReplacement[value];
-    	// --------------------
-    	if (replacement > -1 && replacement < rackSize) {
+      	if (replacement > -1 && replacement < rackSize) {
     		choosePosition = replacement;
     		return true;
-    	}    	
+    	}   
+      	
     	if (!isDiscardCard) {
             replacement = drawReplacement[value];
             if (replacement > -1 && replacement < rackSize) {
-            	if (score == 0 && gapCount[0] < aveRange * 2) {
-            		if (replacement == 1) {
-            			if (hand[0].getValue() < value) {
-            				choosePosition = 1;
-            			} else {
-            				choosePosition = 0;
-            			}
-            			return true;
-            		}
-            	}
-        		
             	choosePosition = replacement;
         		return true;
         	}
@@ -1414,7 +1397,7 @@ public class Player2 implements Player {
 		Card returnCard = hand[newPos];
     	hand[newPos] = newCard;    	
     	reviewHand();
-		return returnCard;
+    	return returnCard;
 	}
 	
 	public void print() {
