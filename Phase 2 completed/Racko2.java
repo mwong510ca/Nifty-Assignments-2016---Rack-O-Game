@@ -304,28 +304,8 @@ public class Racko2 extends JPanel implements MouseListener, ActionListener{
                 add_card_to_discard(drawCard);
             }
         }
-        /*
-        if (deck.size() == 0) {
-            System.out.println("deck is empty");
-        } else {
-            System.out.print("deck : ");
-            for (Card card : deck) {
-                System.out.print(card.getValue() + " ");
-            }
-            System.out.println();
-        }
         
-        if (discard.size() == 0) {
-            System.out.println("discard is empty");
-        } else {
-            System.out.print("discard : ");
-            for (Card card : discard) {
-                System.out.print(card.getValue() + " ");
-            }
-            System.out.println();
-        }
-        */
-        System.out.println("The computer pleaced " + discard.peek().getValue() + " in discard pile.");
+        System.out.println("The computer placed " + discard.peek().getValue() + " in discard pile.");
         System.out.print("computer : ");
         compHand.print();
         System.out.println();
