@@ -3,6 +3,9 @@
 ### [Rack-O Game] -- Arvind Bhusnurmath, Kristen Gee, and Karen Her  
 
 Phase 1 - completed on Nov 21, 2016:  
+* Data structure.
+  * Add Player interface.  
+  * Move computer strategy for Racko.java to Player1.java.
 * UI - Given.
   * Completed missing code.
   * Add [scoring] as actual card game.  The player get 500 points or over to win.
@@ -10,8 +13,6 @@ Phase 1 - completed on Nov 21, 2016:
 
 Phase 2 - completed on Jan 5, 2017.
 * UI - No change.
-* Data structure.
-  * Add Player interface.  Move codes for computer player to Player1 object.
 * Computer strategy (Player2 object) - Rewrite:
   1. Review the hand with even distrubtion.
   2. Hold the cards within the range and in ordering.
