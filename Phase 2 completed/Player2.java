@@ -1320,7 +1320,7 @@ public class Player2 implements Player {
                     }
                 }
                 if (replacement > adjReplacement) {
-                    System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
+                    //System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
                     choosePosition = adjReplacement;
                 }
             } else if (inOrder == 1 && choosePosition > 1 ) {
@@ -1333,7 +1333,7 @@ public class Player2 implements Player {
                 }
                 
                 int adjReplacement = 1;
-                int count = 0;
+                int count = 1;
                 for (int i = 1; i < replacement; i++) {
                     if (gapCount[i] + count < slotCount) {
                         count += 3; 
@@ -1343,7 +1343,7 @@ public class Player2 implements Player {
                     }
                 }
                 if (replacement > adjReplacement) {
-                    System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
+                    //System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
                     choosePosition = adjReplacement;
                 }
             }

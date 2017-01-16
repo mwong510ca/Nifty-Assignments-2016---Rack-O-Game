@@ -9,8 +9,8 @@ import javax.imageio.ImageIO;
 public class Card {
     private int value;
     private BufferedImage img;
-    public final String img_front = "card.png";
-    public final String img_back = "backcard.png";
+    public final String img_front = "images/card.png";
+    public final String img_back = "images/backcard.png";
     private int pos_x = 30;
     private int pos_y = 30;
     
