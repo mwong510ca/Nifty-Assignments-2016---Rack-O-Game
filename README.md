@@ -37,6 +37,14 @@ Phase 2 - completed on Jan 5, 2017.
   4. Keep the cards in sequence for bonus points if possible.
 * Other - Moved images to images folder.
 
+* How to play:  
+  Download [Phase 2] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
+  You can watch the changes made by computer strategy.  
+  <pre>Example:  computer :  7  9 15  x  o 31  x  o  x  x
+            x - The initial card when the game started.
+            o - The card has replaced from the draw pile.
+            # - The card has replaced from the discard pile.</pre>
+
 Phase 3 - in progress.
 * Improve my computer strategy by tracing known cards on deck and other player's hand.
 
@@ -46,3 +54,4 @@ Phase 4.
 [Nifty Assignments 2016]: http://nifty.stanford.edu
 [Rack-O Game]: http://nifty.stanford.edu/2016/arvind-racko/
 [scoring]: http://www.hasbro.com/common/instruct/Racko(1987).PDF
+[Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%202%20completed/Racko.jar.zip
