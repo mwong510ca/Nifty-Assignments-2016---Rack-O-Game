@@ -54,5 +54,5 @@ Phase 4.
 [Nifty Assignments 2016]: http://nifty.stanford.edu
 [Rack-O Game]: http://nifty.stanford.edu/2016/arvind-racko/
 [scoring]: http://www.hasbro.com/common/instruct/Racko(1987).PDF
-[Download Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%202%20completed/Racko.jar.zip
+[Download Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%202%20completed/Racko2_jar.zip
 [Youtube Demo]: https://www.youtube.com/watch?v=6vSdBQDapKY&list=PLRnfrf3rzEFnVm00w-JZ-693lRKXiFRfU
