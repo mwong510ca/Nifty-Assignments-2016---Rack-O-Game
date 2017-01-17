@@ -11,7 +11,7 @@ Phase 1 - completed on Nov 21, 2016:
   * Add [scoring] as actual card game.  The player get 500 points or over to win.
 * Computer strategy - Given.
 
-Phase 2 - completed on Jan 5, 2017.
+Phase 2 - completed on Jan 5, 2017.  [Youtube Demo]
 * UI - No change.
 * Computer strategy - Rewrite:
   1. Review the hand with even distrubtion.  Hold the cards within the range and in ordering.
@@ -38,7 +38,7 @@ Phase 2 - completed on Jan 5, 2017.
 * Other - Moved images to images folder.
 
 * How to play:  
-  Download [Phase 2] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
+  [Download Phase 2] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
   You can watch the changes made by computer strategy.  
   <pre>Example:  computer :  7  9 15  x  o 31  x  o  x  x
             x - The initial card when the game started.
@@ -54,5 +54,5 @@ Phase 4.
 [Nifty Assignments 2016]: http://nifty.stanford.edu
 [Rack-O Game]: http://nifty.stanford.edu/2016/arvind-racko/
 [scoring]: http://www.hasbro.com/common/instruct/Racko(1987).PDF
-[Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%202%20completed/Racko.jar.zip
-[Youtube demo - Phase 2]: https://www.youtube.com/watch?v=6vSdBQDapKY&list=PLRnfrf3rzEFnVm00w-JZ-693lRKXiFRfU
+[Download Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%202%20completed/Racko.jar.zip
+[Youtube Demo]: https://www.youtube.com/watch?v=6vSdBQDapKY&list=PLRnfrf3rzEFnVm00w-JZ-693lRKXiFRfU
