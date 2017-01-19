@@ -11,7 +11,6 @@ public class Player2 implements Player {
     private final int cardKey = 100;
     private final int aveRange;
     private int offRange;
-    private int inOrder;
     private int choosePosition;
 
     public Player2(int size) {
@@ -115,7 +114,7 @@ public class Player2 implements Player {
         System.arraycopy(rangeMax, 0, rangeMax1a, 0, rackSize + 2);
         System.arraycopy(gapCount, 0, gapCount1a, 0, rackSize);
         System.arraycopy(discardReplacement, 0, discard1a, 0, cardSize + 1);
-        System.arraycopy(groupHand, 0, groupHand1a, 0, rackSize);        
+        System.arraycopy(groupHand, 0, groupHand1a, 0, rackSize);       
         review1a(value);
         
         rangeMax1b = new int[rackSize + 2];
@@ -125,7 +124,7 @@ public class Player2 implements Player {
         System.arraycopy(rangeMax, 0, rangeMax1b, 0, rackSize + 2);
         System.arraycopy(gapCount, 0, gapCount1b, 0, rackSize);
         System.arraycopy(discardReplacement, 0, discard1b, 0, cardSize + 1);
-        System.arraycopy(groupHand, 0, groupHand1b, 0, rackSize);        
+        System.arraycopy(groupHand, 0, groupHand1b, 0, rackSize);       
         review1b(value); 
         
         int count1a = 0;
@@ -149,26 +148,20 @@ public class Player2 implements Player {
             System.arraycopy(rangeMax1a, 0, rangeMax, 0, rackSize + 2);
             System.arraycopy(gapCount1a, 0, gapCount, 0, rackSize);
             System.arraycopy(discard1a, 0, discardReplacement, 0, cardSize + 1);
-            System.arraycopy(groupHand1a, 0, groupHand, 0, rackSize);        
+            System.arraycopy(groupHand1a, 0, groupHand, 0, rackSize);       
         } else {
             System.arraycopy(rangeMax1b, 0, rangeMax, 0, rackSize + 2);
             System.arraycopy(gapCount1b, 0, gapCount, 0, rackSize);
             System.arraycopy(discard1b, 0, discardReplacement, 0, cardSize + 1);
-            System.arraycopy(groupHand1b, 0, groupHand, 0, rackSize);        
+            System.arraycopy(groupHand1b, 0, groupHand, 0, rackSize);       
         }
-        inOrder = 0;
-        for (int i = 0; i < rackSize; i++) {
-            if (gapCount[i] == 0) {
-                inOrder++;
-            } else 
-                break;
-        }        
+              
         offRange = 0;
         for (int i = 0; i < rackSize; i++) {
             if (gapCount[i] != 0) {
                 offRange++;
             }
-        }        
+        }       
     }
     
     private void review1a(int[] value) {    
@@ -181,8 +174,7 @@ public class Player2 implements Player {
             }
                         
             int reviewGroup = -1;
-            while (true) {
-                
+            while (true) {              
                 reviewGroup = -1;
                 for (int i = 0; i < rackSize; i++) {
                     int group = groupHand1a[i];
@@ -242,9 +234,9 @@ public class Player2 implements Player {
                                     if (shift < 1) {
                                         continue;
                                     }
-                                    
                                     rangeMax1a[i + 1] = j - 1;
-                                    rangeMax1a[i + 2] = j;                                    
+                                    rangeMax1a[i + 2] = j;
+                                    
                                     reviewGroup = i + 1;
                                     scan[i + 1] = true;
                                     break;
@@ -274,7 +266,6 @@ public class Player2 implements Player {
                                     
                                     if (shift < 1)
                                         continue;
-
                                     if (i > 1 && gapCount1a[i - 2] > 0) {
                                         rangeMax1a[i - 1] = j - 1;
                                         rangeMax1a[i] = j;
@@ -306,7 +297,7 @@ public class Player2 implements Player {
                 
                 for (int i = val + 1; i <= rangeMax1a[reviewGroup + 2]; i++) {
                     if (discard1a[i] > - 1 && discard1a[i] < cardKey) {
-                        discard1a[i] = updatevalue;    
+                        discard1a[i] = updatevalue; 
                         gapCount1a[reviewGroup]--;
                         if (updatevalue != -1) {
                             gapCount1a[updatevalue]++;
@@ -349,6 +340,7 @@ public class Player2 implements Player {
                     } 
                 }
                 
+                // ------------------
                 scan[reviewGroup] = true;
                 
                 gapCount1a = new int[rackSize];
@@ -358,6 +350,8 @@ public class Player2 implements Player {
                     }
                 }
             }
+            
+            //-----------------------------------------
             
             boolean completed = true;
             int i = 0;
@@ -421,7 +415,7 @@ public class Player2 implements Player {
                                     && discard1a[k] != cardKey + j) {
                                 rangeMax1a[group] = k;
                                 k++;
-                            }                            
+                            }                           
                         }
                         i = j + 1;
                         break;
@@ -480,7 +474,7 @@ public class Player2 implements Player {
                         i = j;
                         break;
                     }
-                }                
+                }               
             }
             
             if (completed) {
@@ -560,7 +554,6 @@ public class Player2 implements Player {
                                     
                                     if (shift < 1)
                                         continue;
-                                    
                                     if (i > 1 && gapCount1b[i - 2] > 0) {
                                         rangeMax1b[i - 1] = j - 1;
                                         rangeMax1b[i] = j;
@@ -596,10 +589,8 @@ public class Player2 implements Player {
                                     if (shift < 1) {
                                         continue;
                                     }
-                                    
                                     rangeMax1b[i + 1] = j - 1;
                                     rangeMax1b[i + 2] = j;
-                                    
                                     reviewGroup = i + 1;
                                     scan[i + 1] = true;
                                     break;
@@ -625,7 +616,7 @@ public class Player2 implements Player {
                 
                 for (int i = val + 1; i <= rangeMax1b[reviewGroup + 2]; i++) {
                     if (discard1b[i] > - 1 && discard1b[i] < cardKey) {
-                        discard1b[i] = updatevalue;    
+                        discard1b[i] = updatevalue; 
                         gapCount1b[reviewGroup]--;
                         if (updatevalue != -1) {
                             gapCount1b[updatevalue]++;
@@ -668,6 +659,7 @@ public class Player2 implements Player {
                     } 
                 }
                 
+                // ------------------
                 scan[reviewGroup] = true;
                 
                 gapCount1b = new int[rackSize];
@@ -677,6 +669,8 @@ public class Player2 implements Player {
                     }
                 }
             }
+            
+            //-----------------------------------------
             
             boolean completed = true;
             int i = 0;
@@ -740,7 +734,7 @@ public class Player2 implements Player {
                                     && discard1b[k] != cardKey + j) {
                                 rangeMax1b[group] = k;
                                 k++;
-                            }                            
+                            }                           
                         }
                         i = j + 1;
                         break;
@@ -799,7 +793,7 @@ public class Player2 implements Player {
                         i = j;
                         break;
                     }
-                }                
+                }               
             }
             
             if (completed) {
@@ -854,7 +848,7 @@ public class Player2 implements Player {
                     
                     for (int j = value[0] + 1; j < value[1]; j++) {
                         if (drawReplacement[j] == -1) {
-                            if (--count >= cutoff) {
+                            if (count-- > cutoff) {
                                 drawReplacement[j] = 1;
                             } else {
                                 drawReplacement[j] = 2;
@@ -883,7 +877,7 @@ public class Player2 implements Player {
                     
                     for (int j = value[9] - 1; j > value[8]; j--) {
                         if (discardReplacement[j] == -1) {
-                            if (--count >= cutoff) {
+                            if (count-- > cutoff) {
                                 drawReplacement[j] = 8;
                             } else {
                                 drawReplacement[j] = 7;
@@ -948,7 +942,7 @@ public class Player2 implements Player {
                             
                             for (int j = value[i] + 1; j < value[i + 1]; j++) {
                                 if (discardReplacement[j] == -1) {
-                                    if (--count >= cutoff) {
+                                    if (count-- > cutoff) {
                                         drawReplacement[j] = i + 1;
                                     } else {
                                         drawReplacement[j] = i + 2;
@@ -959,68 +953,68 @@ public class Player2 implements Player {
                     } else if (gapCount[i - 1] > 0 && gapCount[i + 2] > 0) {
                     // .... n i0 0 n ....
                         int gapPlusL = 0;
-						if (value[i - 1] > value[i] && value[i - 1] < value[i + 1]) {
-							for (int j = value[i - 1] + 1; j < value[i + 1]; j++) {
-								if (discardReplacement[j] == -1) {
-									discardReplacement[j] = i;
-									drawReplacement[j] = i;
-									gapPlusL++;
-								}
-							}
-						}
-						int gapPlusR = 0;
-						if (value[i + 2] > value[i] && value[i + 2] < value[i + 1]) {
-							for (int j = value[i] + 1; j < value[i + 2]; j++) {
-								if (discardReplacement[j] == -1) {
-									discardReplacement[j] = i + 1;
-									drawReplacement[j] = i + 1;
-									gapPlusR++;
-								}
-							}
-						}
-												
-						int shift = 0;
-						for (int j = rangeMax[i - 1] + 1; j < rangeMax[i + 2]; j++) {
-							if (drawReplacement[j] == -1) {
-								shift++;
-							}
-						}
-						
+                        if (value[i - 1] > value[i] && value[i - 1] < value[i + 1]) {
+                            for (int j = value[i - 1] + 1; j < value[i + 1]; j++) {
+                                if (discardReplacement[j] == -1) {
+                                    discardReplacement[j] = i;
+                                    drawReplacement[j] = i;
+                                    gapPlusL++;
+                                }
+                            }
+                        }
+                        int gapPlusR = 0;
+                        if (value[i + 2] > value[i] && value[i + 2] < value[i + 1]) {
+                            for (int j = value[i] + 1; j < value[i + 2]; j++) {
+                                if (discardReplacement[j] == -1) {
+                                    discardReplacement[j] = i + 1;
+                                    drawReplacement[j] = i + 1;
+                                    gapPlusR++;
+                                }
+                            }
+                        }
+                                                
+                        int shift = 0;
+                        for (int j = rangeMax[i - 1] + 1; j < rangeMax[i + 2]; j++) {
+                            if (drawReplacement[j] == -1) {
+                                shift++;
+                            }
+                        }
+                        
                         int expandL = gapCount[i - 1];
-						int expandR = gapCount[i + 2];
-						int j = value[i] + 1;
-						while (expandR > expandL && shift > 0 && j < value[i + 1]) {
-							if (drawReplacement[j] == -1) {
-								drawReplacement[j] = i;
-								expandL++;
-								shift--;
-							}
-							j++;
-						}
-						j = value[i + 1] - 1;
-						while (expandR < expandL && shift > 0 && j > value[i]) {
-							if (drawReplacement[j] == -1) {
-								drawReplacement[j] = i + 1;
-								expandR++;
-								shift--;
-							}
-							j--;
-						}
-						
-						if (shift > 0) {
-							shift /= 2;
-							for (j = value[i + 1] - 1; j > value[i]; j--) {
-								if (drawReplacement[j] == -1) {
-									if (shift-- > 0) {
-										drawReplacement[j] = i + 1;
-									} else 
-										drawReplacement[j] = i;
-								}
-							}
-						}
-						
-						gapCount[i - 1] += gapPlusL;
-						gapCount[i + 2] += gapPlusR;
+                        int expandR = gapCount[i + 2];
+                        int j = value[i] + 1;
+                        while (expandR > expandL && shift > 0 && j < value[i + 1]) {
+                            if (drawReplacement[j] == -1) {
+                                drawReplacement[j] = i;
+                                expandL++;
+                                shift--;
+                            }
+                            j++;
+                        }
+                        j = value[i + 1] - 1;
+                        while (expandR < expandL && shift > 0 && j > value[i]) {
+                            if (drawReplacement[j] == -1) {
+                                drawReplacement[j] = i + 1;
+                                expandR++;
+                                shift--;
+                            }
+                            j--;
+                        }
+                        
+                        if (shift > 0) {
+                            shift /= 2;
+                            for (j = value[i + 1] - 1; j > value[i]; j--) {
+                                if (drawReplacement[j] == -1) {
+                                    if (shift-- > 0) {
+                                        drawReplacement[j] = i + 1;
+                                    } else 
+                                        drawReplacement[j] = i;
+                                }
+                            }
+                        }
+                        
+                        gapCount[i - 1] += gapPlusL;
+                        gapCount[i + 2] += gapPlusR;
                     }
                 } 
             } else if (i == 0 && gapCount[0] == 0 && gapCount[1] > 0) {
@@ -1065,9 +1059,9 @@ public class Player2 implements Player {
                 }
                 int cutoff = (int) Math.floor(count / 2);
                 
-                for (int j = value[9] + 1; j <= cardSize; j++) {
+                for (int j = cardSize; j > value[9]; j--) {
                     if (discardReplacement[j] == -1) {
-                        if (count >= cutoff) {
+                        if (count-- > cutoff) {
                             drawReplacement[j] = 9;
                         } else {
                             drawReplacement[j] = 8;
@@ -1137,7 +1131,7 @@ public class Player2 implements Player {
             }
         }
         
-        // shift first and last 2 to increase chance.
+        // shift first and last to increase chance.
         int pos = -1;
         for (int i = 0; i < rackSize; i++) {
             if (gapCount[i] > 0) {
@@ -1148,21 +1142,53 @@ public class Player2 implements Player {
         if (pos > -1) {
             int expand = gapCount[pos + 1];
             for (int i = pos; i >= 0 && expand < 6; i--) {
-                if (gapCount[i + 1] == 0 && value[i] + 1 == value[i + 1])
+                if (i > 0 && value[i] - 1 == value[i - 1])
                     break;
                 if (expand < 6) {
-                    for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
-                        if (discardReplacement[j] < cardKey) {
-                            expand++;
-                        }
-                        if (drawReplacement[j] == -1) {
-                            drawReplacement[j] = i;
-                            if (offRange < 3) {
-                                discardReplacement[j] = i;
+                    if (pos == i) {
+                        int count = 0;
+                        for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
+                            if (discardReplacement[j] < cardKey) {
+                                expand++;
+                                count++;
                             }
-                        } else {
-                            if (offRange < 3) {
-                                discardReplacement[j] = drawReplacement[j];
+                        }
+                        
+                        int cutoff = (int) Math.floor(count / 2);
+                        for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
+                            if (drawReplacement[j] == -1) {
+                                if (count < cutoff) {
+                                    drawReplacement[j] = i + 1;
+                                } else {
+                                    drawReplacement[j] = i;
+                                }
+                                if (offRange < 3) {
+                                    discardReplacement[j] = drawReplacement[j];
+                                }
+                            } else {
+                                if (offRange < 3) {
+                                    discardReplacement[j] = drawReplacement[j];
+                                }
+                            }
+                            
+                            if (discardReplacement[j] < cardKey) {
+                                count--;
+                            }
+                        }
+                    } else {
+                        for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
+                            if (discardReplacement[j] < cardKey) {
+                                expand++;
+                            }
+                            if (drawReplacement[j] == -1) {
+                                drawReplacement[j] = i;
+                                if (offRange < 3) {
+                                    discardReplacement[j] = i;
+                                }
+                            } else {
+                                if (offRange < 3) {
+                                    discardReplacement[j] = drawReplacement[j];
+                                }
                             }
                         }
                     }
@@ -1180,21 +1206,54 @@ public class Player2 implements Player {
         if (pos > -1) {
             int expand = gapCount[pos - 1];
             for (int i = pos; i <= 9 && expand < 6; i++) {
-                if (gapCount[i - 1] == 0 && value[i] - 1 == value[i - 1])
+                if (i < 9 && value[i] + 1 == value[i + 1])
                     break;
                 if (expand < 6) {
-                    for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
-                        if (discardReplacement[j] < cardKey) {
-                            expand++;
-                        }
-                        if (drawReplacement[j] == -1) {
-                            drawReplacement[j] = i;
-                            if (offRange < 3) {
-                                discardReplacement[j] = i;
+                    if (i == pos) {
+                        int count = 0;
+                        for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
+                            if (discardReplacement[j] < cardKey) {
+                                expand++;
+                                count++;
                             }
-                        } else {
-                            if (offRange < 3) {
-                                discardReplacement[j] = drawReplacement[j];
+                        }
+                        
+                        int cutoff = (int) Math.floor(count / 2);
+                        for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
+                            if (drawReplacement[j] == -1) {
+                                if (count < cutoff) {
+                                    drawReplacement[j] = i;
+                                } else {
+                                    drawReplacement[j] = i - 1;
+                                }
+                                
+                                if (offRange < 3) {
+                                    discardReplacement[j] = drawReplacement[j];
+                                }
+                            } else {
+                                if (offRange < 3) {
+                                    discardReplacement[j] = drawReplacement[j];
+                                }
+                            }
+                            
+                            if (discardReplacement[j] < cardKey) {
+                                count--;
+                            }
+                        }
+                    } else {
+                        for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
+                            if (discardReplacement[j] < cardKey) {
+                                expand++;
+                            }
+                            if (drawReplacement[j] == -1) {
+                                drawReplacement[j] = i;
+                                if (offRange < 3) {
+                                    discardReplacement[j] = i;
+                                }
+                            } else {
+                                if (offRange < 3) {
+                                    discardReplacement[j] = drawReplacement[j];
+                                }
                             }
                         }
                     }
@@ -1206,8 +1265,8 @@ public class Player2 implements Player {
         if (maxSeq < 6) {
             for (int i = 0; i < rackSize; i++) {
                 if (gapCount[i] == 0) {
-                    //  x x x x x x 15 x x x x x x 
-                    //                 16
+                    //  x x x x x x n x x x x x x 
+                    //               n+1
                     if (i < rackSize - 1 && discardReplacement[value[i] + 1] < rackSize) {
                         if (drawReplacement[value[i] + 1] == -1) {
                             if (gapCount[i + 1] > aveRange) {
@@ -1239,11 +1298,12 @@ public class Player2 implements Player {
                                                 if (seqL > 2) 
                                                     discardReplacement[value[i] + 1] = i + 1;
                                                 drawReplacement[value[i] + 1] = i + 1;
-                                            }                                
+                                            }                               
                                         } else {
                                             if (seqL > 2) 
                                                 discardReplacement[value[i] + 1] = i + 1;
                                             drawReplacement[value[i] + 1] = i + 1;
+                                            
                                         }
                                     }
                                 }
@@ -1251,8 +1311,8 @@ public class Player2 implements Player {
                         }
                     }
 
-                    //  x x x x x x 15 x x x x x x 
-                    //           14
+                    //  x x x x x x n x x x x x x 
+                    //           n-1
                     if (i > 0 && discardReplacement[value[i] - 1] < rackSize) {
                         if (drawReplacement[value[i] - 1] == -1) {
                             if (gapCount[i - 1] > aveRange) {
@@ -1283,7 +1343,7 @@ public class Player2 implements Player {
                                                 if (seqR > 2)
                                                     discardReplacement[value[i] - 1] = i - 1;
                                                 drawReplacement[value[i] - 1] = i - 1;
-                                            }            
+                                            }           
                                         } else {
                                             if (seqR > 2)
                                                 discardReplacement[value[i] - 1] = i - 1;
@@ -1293,78 +1353,31 @@ public class Player2 implements Player {
                                 }
                             }
                         }
-                    }                        
+                    }                       
                 }
             }
-        }                
-    }    
+        }               
+    }   
 
+    // TODO
     public boolean determine_use(int value, boolean isDiscardCard) {
         boolean secondCheck = goodChoice(value, isDiscardCard);
         if (!secondCheck) {
             return false;
         }
-        if (choosePosition < 4) {
-            if (inOrder == 0 && choosePosition > 0) {
-                int replacement = choosePosition;
-                int slotCount = 0;
-                for (int i = 1; i <= value; i++) {
-                    if (discardReplacement[i] < cardKey) {
-                        slotCount++;
-                    }
-                }
-                
-                int adjReplacement = 0;
-                int count = 3;
-                for (int i = 0; i < replacement; i++) {
-                    if (gapCount[i] + count < slotCount) {
-                        count += 3; 
-                        adjReplacement++;
-                    } else {
-                        break;
-                    }
-                }
-                if (replacement > adjReplacement) {
-                    //System.out.println("\t\t\t use " + adjReplacement + " instead of " + replacement);
-                    choosePosition = adjReplacement;
-                }
-            } else if (inOrder == 1 && choosePosition > 1 ) {
-                int replacement = choosePosition;
-                int slotCount = 0;
-                for (int i = hand[0].getValue(); i <= value; i++) {
-                    if (discardReplacement[i] < cardKey) {
-                        slotCount++;
-                    }
-                }
-                
-                int adjReplacement = 1;
-                int count = 1;
-                for (int i = 1; i < replacement; i++) {
-                    if (gapCount[i] + count < slotCount) {
-                        count += 3; 
-                        adjReplacement++;
-                    } else {
-                        break;
-                    }
-                }
-                
-                if (replacement > adjReplacement) {
-                    choosePosition = adjReplacement;
-                    int currOffRange = offRange;
-                    Card currCard = hand[replacement];
-                    Card tempCard = new Card(value, 0, 0);
-                    replaceCard(tempCard, replacement);
-                    int newOffRange = offRange;
-                    replaceCard(currCard, replacement);
-                    if (newOffRange <= currOffRange) {
-                        return true;
-                    } else {
-                    	choosePosition = replacement;
-                    }
-                }
-            }
-        }
         
+        if (value < cardSize && discardReplacement[value + 1] == cardKey + choosePosition - 1) {
+            if (choosePosition > 2 && 
+                    discardReplacement[hand[choosePosition - 2].getValue()] != cardKey + choosePosition - 2) {
+                choosePosition -= 2;
+            }
+        } else if (value > 1 && discardReplacement[value - 1] == cardKey + choosePosition + 1) {
+            if (choosePosition <= cardSize - 2 &&
+                    discardReplacement[hand[choosePosition + 2].getValue()] != cardKey + choosePosition + 2) {
+                choosePosition += 2;
+            }
+        } 
+
         int currOffRange = offRange;
         int replacement = choosePosition;
         Card currCard = hand[replacement];
@@ -1378,21 +1391,20 @@ public class Player2 implements Player {
         return false;
     }
     
-    private boolean goodChoice(int value, boolean isDiscardCard) {
+    public boolean goodChoice(int value, boolean isDiscardCard) {
         int replacement = discardReplacement[value];
-          if (replacement > -1 && replacement < rackSize) {
+        if (replacement > -1 && replacement < rackSize) {
             choosePosition = replacement;
             return true;
-        }   
-          
+        }       
         if (!isDiscardCard) {
             replacement = drawReplacement[value];
             if (replacement > -1 && replacement < rackSize) {
                 choosePosition = replacement;
                 return true;
             }
-        }          
-         return false;
+        }       
+        return false;
     }
 
     private int choose_position(int card) {
@@ -1411,7 +1423,7 @@ public class Player2 implements Player {
     
     private Card replaceCard(Card newCard, int newPos) {
         Card returnCard = hand[newPos];
-        hand[newPos] = newCard;        
+        hand[newPos] = newCard;     
         reviewHand();
         return returnCard;
     }
