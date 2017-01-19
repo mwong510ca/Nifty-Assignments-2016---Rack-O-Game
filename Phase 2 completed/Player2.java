@@ -1372,7 +1372,7 @@ public class Player2 implements Player {
                 choosePosition -= 2;
             }
         } else if (value > 1 && discardReplacement[value - 1] == cardKey + choosePosition + 1) {
-            if (choosePosition <= cardSize - 2 &&
+            if (choosePosition <= rackSize - 2 &&
                     discardReplacement[hand[choosePosition + 2].getValue()] != cardKey + choosePosition + 2) {
                 choosePosition += 2;
             }
