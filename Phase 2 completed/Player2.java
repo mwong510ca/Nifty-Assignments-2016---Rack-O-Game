@@ -298,7 +298,7 @@ public class Player2 implements Player {
                 }
                 
                 for (int i = val + 1; i <= rangeMax1a[reviewGroup + 2]; i++) {
-                    if (discard1a[i] > - 1 && discard1a[i] < cardKey) {
+                    if (discard1a[i] > -1 && discard1a[i] < cardKey) {
                         discard1a[i] = updatevalue;    
                         gapCount1a[reviewGroup]--;
                         if (updatevalue != -1) {
@@ -325,7 +325,7 @@ public class Player2 implements Player {
                     begin2 = rangeMax1a[reviewGroup - 1];
                 }
                 for (int i = val - 1; i > begin2; i--) {
-                    if (discard1a[i] > - 1 && discard1a[i] < cardKey) {
+                    if (discard1a[i] > -1 && discard1a[i] < cardKey) {
                         discard1a[i] = updatevalue;
                         gapCount1a[reviewGroup]--;
                         if (updatevalue != -1) {
@@ -346,7 +346,7 @@ public class Player2 implements Player {
                 
                 gapCount1a = new int[rackSize];
                 for (int i = 1; i <= cardSize; i++) {
-                    if (discard1a[i] > - 1 && discard1a[i] < rackSize) {
+                    if (discard1a[i] > -1 && discard1a[i] < rackSize) {
                         gapCount1a[discard1a[i]]++;
                     }
                 }
@@ -426,7 +426,7 @@ public class Player2 implements Player {
                             completed = false;
                             int aveMin = total / (j - begin + 1);
                             int aveMax = aveMin + 1;
-                            int numAveMax = total - aveMin * (j-begin + 1);
+                            int numAveMax = total - aveMin * (j - begin + 1);
                             int group = rackSize - 1;
                             int k = cardSize;
                             while (total > 0) {
@@ -617,7 +617,7 @@ public class Player2 implements Player {
                 }
                 
                 for (int i = val + 1; i <= rangeMax1b[reviewGroup + 2]; i++) {
-                    if (discard1b[i] > - 1 && discard1b[i] < cardKey) {
+                    if (discard1b[i] > -1 && discard1b[i] < cardKey) {
                         discard1b[i] = updatevalue;    
                         gapCount1b[reviewGroup]--;
                         if (updatevalue != -1) {
@@ -644,7 +644,7 @@ public class Player2 implements Player {
                     begin2 = rangeMax1b[reviewGroup - 1];
                 }
                 for (int i = val - 1; i > begin2; i--) {
-                    if (discard1b[i] > - 1 && discard1b[i] < cardKey) {
+                    if (discard1b[i] > -1 && discard1b[i] < cardKey) {
                         discard1b[i] = updatevalue;
                         gapCount1b[reviewGroup]--;
                         if (updatevalue != -1) {
@@ -665,7 +665,7 @@ public class Player2 implements Player {
                 
                 gapCount1b = new int[rackSize];
                 for (int i = 1; i <= cardSize; i++) {
-                    if (discard1b[i] > - 1 && discard1b[i] < rackSize) {
+                    if (discard1b[i] > -1 && discard1b[i] < rackSize) {
                         gapCount1b[discard1b[i]]++;
                     }
                 }
@@ -745,7 +745,7 @@ public class Player2 implements Player {
                             completed = false;
                             int aveMin = total / (j - begin + 1);
                             int aveMax = aveMin + 1;
-                            int numAveMax = total - aveMin * (j-begin + 1);
+                            int numAveMax = total - aveMin * (j - begin + 1);
                             int group = rackSize - 1;
                             int k = cardSize;
                             while (total > 0) {
