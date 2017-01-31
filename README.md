@@ -58,7 +58,7 @@ the slot 10.  Computer estimated there are 10 chances to fill slot 10, and it wo
       * Phase 3:  Once the deck has shuffled and replaced.  The computer found the player hold the card 31 - 40.  It will changed the estimates to sort the rack from 1 to 30.
 
 * How to play:  
-  [Download Phase 3] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
+  Coming soon. Fixing bugs.
 
 Phase 4 - in progress.
 * Modify game to support 2 to 4 players, rewrite UI in pyqt5. 
