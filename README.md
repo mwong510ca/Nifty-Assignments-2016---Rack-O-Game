@@ -45,14 +45,31 @@ Phase 2 - completed on Jan 5, 2017.  [Youtube Demo]
             o - The card has replaced from the draw pile.
             # - The card has replaced from the discard pile.</pre>
 
-Phase 3 - in progress.
-* Improve my computer strategy by tracing known cards on deck and other player's hand.
+Phase 3 -  completed on Jan 30, 2017.  
+* Computer strategy - Improve my computer strategy by tracing known cards on deck and other player's hand.
+  1.  Computer will ignore the cards in the discard deck.
+  2.  Once the discard deck has shuffle and replaced to the draw deck.  Computer knew the 10 cards on player's hand without the currect order.
 
-Phase 4.
+Here is the difference between Phase 2 and Phase 3: 
+If the player kept all cards 31 - 40 (not in order) on it's hand and not to throw them back to the discard deck.
+Computer has 3 5 10 12 17 18 19 29 30 11 on it's hand.  Pending a card from 31 - 40 to fill the slot 10.
+* Phase 2: The round will never finish, because the computer will never fill the 
+the slot 10.  Computer estimated there are 10 chances to fill slot 10, and it won't shift the 9th card to increase chance.
+* Phase 3:  Once the deck has shuffled and replaced.  The computer found the player hold the card 31 - 40.  It will changed the estimates to sort the rack from 1 to 30.
+
+* How to play:  
+  [Download Phase 3] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
+
+Phase 4 - in progress.
 * Modify game to support 2 to 4 players, rewrite UI in pyqt5. 
+
+Phase 5
+* Computer strategy - Enhancement for 2 - 4 players, 40 - 60 cards.
+If the computer has to lose that round.  Throw a card for the least players' points.
 
 [Nifty Assignments 2016]: http://nifty.stanford.edu
 [Rack-O Game]: http://nifty.stanford.edu/2016/arvind-racko/
 [scoring]: http://www.hasbro.com/common/instruct/Racko(1987).PDF
 [Download Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%202%20completed/Racko2.zip
+[Download Phase 2]: https://github.com/mwong510ca/RackoGame/raw/master/Phase%203%20completed/Racko3.zip
 [Youtube Demo]: https://www.youtube.com/watch?v=6vSdBQDapKY&list=PLRnfrf3rzEFnVm00w-JZ-693lRKXiFRfU
