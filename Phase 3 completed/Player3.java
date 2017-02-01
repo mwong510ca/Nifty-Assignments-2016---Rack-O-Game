@@ -3,7 +3,7 @@ public class Player3 extends Player2 {
     private int[] discardPile;
     private int discardCount;
     private byte[] cardsStatus;
-
+    
     public Player3(int size, int oppoPlayers) {
         super(size);
     }
@@ -85,12 +85,13 @@ public class Player3 extends Player2 {
         }
         
         updateGroupHand();
+        
         level1review(value);
         if (offRange > 0) {
             level2review(value);
         }
     } 
-    
+
     public boolean determine_use(int value, boolean isDiscardCard) {
         if (isDiscardCard) {
             cardsStatus[value] = 0;
@@ -142,12 +143,17 @@ public class Player3 extends Player2 {
         Card tempCard = new Card(value, 0, 0);
         byte[] backup = new byte[rackSize];
         System.arraycopy(viewable, 0, backup, 0, rackSize);
+        
         replaceCard(tempCard, replacement, false);
+        cardsStatus[currCard.getValue()] = 0;
         reviewHand();    
         int newOffRange = offRange;
+        
         replaceCard(currCard, replacement, false);
+        cardsStatus[tempCard.getValue()] = 0;
         viewable = backup;
         reviewHand();    
+        
         if (newOffRange <= currOffRange) {
             return true;
         }
