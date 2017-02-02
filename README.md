@@ -48,7 +48,7 @@ Phase 2 - completed on Jan 5, 2017.  [Youtube Demo]
 Phase 3 -  completed on Jan 30, 2017.  
 * Computer strategy - Improve my computer strategy by tracing known cards on deck and other player's hand.
   1.  Computer will ignore the cards in the discard deck.
-  2.  Once the discard deck has shuffle and replaced to the draw deck.  Computer knew the 10 cards on player's hand without the currect order.
+  2.  Once the discard deck has shuffle and replaced to the draw deck.  Computer knew the 10 cards on player's hand but not the acutal order.
 
 * Here is the difference between Phase 2 and Phase 3:  
   * If the player kept all cards 31 - 40 (not in order) on it's hand and not to throw them back to the discard deck.  
