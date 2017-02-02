@@ -55,7 +55,7 @@ Phase 3 -  completed on Jan 30, 2017.
   * Computer has 3 5 10 12 17 18 19 29 30 11 on it's hand.  Pending a card from 31 - 40 to fill the slot 10.  
     * Phase 2: The round will never finish, because the computer will never fill the 
 the slot 10.  Computer estimated there are 10 chances to fill slot 10, and it won't shift the 9th card to increase chance.  
-    * Phase 3:  Once the deck has shuffled and replaced.  The computer found the player hold the card 31 - 40.  It will changed the estimates to sort the rack from 1 to 3.  
+      * Phase 3:  Once the deck has shuffled and replaced.  The computer found the player hold the card 31 - 40.  It will changed the estimates to sort the rack from 1 to 3.  
 
 * How to play:  
   [Download Phase 3] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
