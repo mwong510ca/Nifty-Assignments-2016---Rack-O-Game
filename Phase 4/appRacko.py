@@ -6,7 +6,8 @@ import time
 import subprocess
 import socket
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from random import randrange
 
 from gui.mainWindow import Ui_MainWindow as MainWindow
@@ -35,6 +36,8 @@ SIZE_RACK = 10
 
 
 class GameRacko(QMainWindow, MainWindow):
+    closing = QtCore.pyqtSignal()
+
     def __init__(self, in_gateway):
         super().__init__()
         self._gateway = in_gateway
@@ -106,6 +109,12 @@ class GameRacko(QMainWindow, MainWindow):
         self.optionView.toggled.connect(self._show_replacement)
         self._layout_reset()
 
+        self.actionAboutRacko.triggered.connect(self._about_racko)
+        self.actionAboutAuthor.triggered.connect(self._about_author)
+        self.actionExit.triggered.connect(self._custom_quit)
+        self.actionGameRules.triggered.connect(self._game_rules)
+        self.actionHowToPlay.triggered.connect(self._how_to_play)
+
     def _load_engine_setting(self):
         self._game_engine = Engine(SIZE_RACK)
         self._game_engine.scoresUpdate.connect(self._round_scores_update)
@@ -154,12 +163,15 @@ class GameRacko(QMainWindow, MainWindow):
 
     def _game_start_stop(self):
         if self._game_active:
-            self._game_active = False
-            self.headingSetup.setEnabled(True)
-            self.requirePlayer2.setEnabled(True)
-            self.optionPlayer3.setEnabled(True)
-            self.optionPlayer4.setEnabled(True)
-            self.actionButton.setText("New Game")
+            reply = QMessageBox.question(None, '', 'You are requesting to stop the game,\n' + 
+                                                'do you want computer take over your turn?\n' + 
+                                                'Yes - finish remaining game in fast speed\n' +
+                                                'No - stop the game now',
+                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self._game_computer_take_over()
+            else: 
+                self._game_terminate()
         else:
             self._layout_reset()
             self._game_start()
@@ -170,8 +182,52 @@ class GameRacko(QMainWindow, MainWindow):
             self.optionPlayer4.setEnabled(False)
             self.actionButton.setText("Stop")
 
+    def _game_terminate(self):
+            self._game_active = False
+            self.headingSetup.setEnabled(True)
+            self.requirePlayer2.setEnabled(True)
+            self.optionPlayer3.setEnabled(True)
+            self.optionPlayer4.setEnabled(True)
+            self.actionButton.setText("New Game")
+
+    def _game_computer_take_over(self):
+        human_id = -1;
+        if not self._layout1_lock:
+            human_id = 0
+        elif not self._layout3_lock:
+            human_id = 2
+        count_computer = 0
+        for player in self._players_list:
+            if player is not None:
+                count_computer += 1
+        computer_replacement = self._gateway.setPlayerReplacement()
+        self._players_list[human_id] = computer_replacement
+        self._game_engine.setHumanReplacement(human_id, computer_replacement)
+        change_speed = True
+        if len(self._players_list) == 4:
+            for player in self._players_list:
+                if player is None:
+                    reply = QMessageBox.question(None, '', 'You have twe set of racks.\n' + 
+                                                'Do you want to replacment to computer for the other set?\n' +
+                                                'If not, game will remains in same speed setting.',
+                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                    if reply == QMessageBox.Yes:
+                        if human_id == 0:
+                            computer_replacement2 = self._gateway.setPlayerReplacement()
+                            self._players_list[2] = computer_replacement2
+                            self._game_engine.setHumanReplacement(2, computer_replacement2)
+                        else:
+                            computer_replacement2 = self._gateway.setPlayerReplacement()
+                            self._players_list[0] = computer_replacement2
+                            self._game_engine.setHumanReplacement(0, computer_replacement2)
+                    else:
+                        change_speed = False
+        if change_speed:
+            self._game_engine.setAutoRun()
+        self._game_engine.start()
+
     def _game_start(self):
-        self._status_line = []
+        self._status_line = ["", "", "", "", "", "", ""]
         self._setup_players()
         for rack in self._players_layout:
             for slot in range(SIZE_RACK):
@@ -271,7 +327,7 @@ class GameRacko(QMainWindow, MainWindow):
             self._scores_labels[self._players_layout[player]].setText(
                 str(scores[player]))
         if is_game_end and self._game_active:
-            self._game_start_stop()
+            self._game_terminate()
 
     def _refresh_draw_pile(self, count, value, face_up):
         if count > 0:
@@ -312,11 +368,9 @@ class GameRacko(QMainWindow, MainWindow):
                                                     + NUMBER_COLOR + ">" + value + "</font>")
 
     def _refresh_game_status(self, line):
-        if len(self._status_line) == 7:
-            self._status_line.remove(self._status_line[-1])
         self._status_line.insert(0, line)
         msg = line
-        for line_number in range(1, len(self._status_line)):
+        for line_number in range(1, 7):
             msg += "<BR>" + self._status_line[line_number]
         self.statusGame.setText(msg)
 
@@ -371,6 +425,48 @@ class GameRacko(QMainWindow, MainWindow):
         elif player_id == 2:
             self._layout3_lock = False
 
+    def _about_racko(self):
+        QMessageBox.information(None, 'About Racko Game', 'About Racko Game\n' +
+                                'A 2-4 players rack-o! with computer steagery.\n' +
+                                'Game setup are based on the real card game.\n' +
+                                'View the following link for more information:\n' +
+                                'http://www.hasbro.com/common/instruct/Racko(1987).PDF',
+                                QMessageBox.Close, QMessageBox.Close)
+
+    def _about_author(self):
+        QMessageBox.information(None, 'About Author', 'Author: Meisze Wong\n' +
+                                'www.linkedin.com/pub/macy-wong/46/550/37b/\n\n' +
+                                'view source code:\nhttps://github.com/mwong510ca/RackoGame-ComputerStragery',
+                                QMessageBox.Close, QMessageBox.Close)
+
+    def _game_rules(self):
+        QMessageBox.information(None, 'Game Rules', 'Rack-o! View the game rules from the following link:\n' +
+                                'http://www.hasbro.com/common/instruct/Racko(1987).PDF',
+                                QMessageBox.Close, QMessageBox.Close)
+
+    def _how_to_play(self):
+        QMessageBox.information(None, 'How To Play', 'Rack-o! How to play:\n\n'
+                                '1. Choose 1 to 3 computer players and start the game.\n' +
+                                '   You may play second set in a 4 playes rack-o!\n\n' +
+                                '2. On you turn, your rack will be highlight.  Sort the lowest to highest ' +
+                                ' numbers from bottom up.\n\n' +
+                                '3. Replace with a discard card, click on the number of your deck\n' + 
+                                '   Pick a card from deck, click the deck pile. Then,\n' +
+                                '   Click your number to replace the deck card, \n' +
+                                '   or click the deck pile again to throw the card in discard pile.\n\n' +
+                                'You have an option to show the replacement from computer players.\n' +
+                                'Show replacement will play in fast speed.\n\n' +
+                                'Have fun!!!',
+                                QMessageBox.Close, QMessageBox.Close)
+
+    def _custom_quit(self):
+        if QMessageBox.question(None, '', 'Are you sure to quit?',
+                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
+            QApplication.quit()
+
+    def closeEvent(self, event):
+        self.closing.emit()
+        super(GameRacko, self).closeEvent(event)
 
 if __name__ == "__main__":
     host = '127.0.0.1'

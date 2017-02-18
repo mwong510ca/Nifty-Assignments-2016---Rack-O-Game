@@ -21,7 +21,7 @@ class Engine(QThread):
     def __init__(self, size):
         super(Engine, self).__init__()
         self._isRunning = False
-        self.setFastSpeed()
+        self.setDefaultSpeed()
         self._rack_size = size
         self._is_active = False
 
@@ -30,16 +30,21 @@ class Engine(QThread):
         self._is_active = False
         self._action = 1
         self._number_of_players = len(player_list)
+        self.gameStatus.emit(str(self._number_of_players) + " players Rack-o!  Use card 1 - "
+                + str(card_size) + ".")
+        """
         for player in player_list:
             if player is None:
                 print("human")
             else:
                 print(player)
+        """
         self._player_list = player_list
         self._player_name = player_name
         self._player_layout = player_layout
         self._racko_size = card_size
         self._show_replacement = show_replacement
+        self.replacementVisible(show_replacement)
         self._round_number = 1
         self._dealer_id = randrange(self._number_of_players)
         self._active_player = -1
@@ -53,17 +58,22 @@ class Engine(QThread):
         self._delay_new_round = 10
 
     def setFastSpeed(self):
-        self._speed_deal = 0
+        self._speed_deal = 0.01
         self._speed_play = 0.1
-        self._delay_new_round = 3
+        self._delay_new_round = 5
 
-    def setSlowSpeed(self):
-        self._speed_deal = 0.2
-        self._speed_play = 1
-        self._delay_new_round = 30
+    def setAutoRun(self):
+        self.replacementVisible(True)
+        self._speed_deal = 0
+        self._speed_play = 0.02
+        self._delay_new_round = 1
 
     def replacementVisible(self, show_replacement):
         self._show_replacement = show_replacement
+        if show_replacement:
+            self.setFastSpeed()
+        else:
+            self.setDefaultSpeed()
         if self._is_active:
             for player_id in range(self._number_of_players):
                 if player_id == self._active_player:
@@ -75,6 +85,11 @@ class Engine(QThread):
         self._human_response_slot = slot
         self._action = 2
 
+    def setHumanReplacement(self, player_id, computer_player):
+        self._action = 3
+        computer_player.setHand(bytearray(self._player_hand[player_id]))
+        self._player_list[player_id] = computer_player
+
     def run(self):
         self.actionLock.emit(True)
         self._isRunning = True
@@ -83,7 +98,28 @@ class Engine(QThread):
             self._load_deck()
             self._deal_hand()
         elif self._action == 2:
-            self._human_response(self._human_response_slot)
+            self._human_response()
+        elif self._action == 3:
+            """
+            for player in self._player_list:
+                if player is None:
+                    print("human")
+                else:
+                    print(player)
+            """
+            if self._human_draw_card > -1:
+                replacement_player = self._player_list[self._active_player]
+                print(replacement_player)
+                print(str(self._human_draw_card))
+                replacement_player.determine_use(self._human_draw_card, True)
+                picked = replacement_player.determine_use(self._human_draw_card, False)
+                if picked:
+                    self._human_response_slot = replacement_player.choose_position(self._human_draw_card)
+                    self._human_response()
+                else:
+                    self._human_response()
+            else:
+                self._computer_play(self._active_player)
         self._isRunning = False
         self.actionLock.emit(False)
 
@@ -128,7 +164,7 @@ class Engine(QThread):
         for player_id in range(self._number_of_players):
             if self._player_list[player_id] is not None:
                 self._player_list[player_id].setHand(bytearray(self._player_hand[player_id]))
-
+        self.gameStatus.emit("")
         self.gameStatus.emit(self._player_name[self._dealer_id] + " go first.")
         if self._player_list[self._dealer_id] is not None:
             self._computer_play(self._dealer_id)
@@ -218,7 +254,7 @@ class Engine(QThread):
         else:
             card_value = self.dealCard()
             self.discardPile.emit(len(self._deck), 0, False)
-            picked = computer.determine_use(card_value, True)
+            picked = computer.determine_use(card_value, False)
             self.discardPile.emit(len(self._deck_discard), 0, False)
             time.sleep(self._speed_play)
             if picked:
@@ -237,7 +273,6 @@ class Engine(QThread):
             else:
                 self.addToDiscard(card_value)
                 time.sleep(self._speed_play)
-
                 self.gameStatus.emit(self._player_name[player_id] + ": Place draw card "
                                      + str(card_value) + " in discard pile.")
         self._check_racko(player_id)
@@ -249,8 +284,9 @@ class Engine(QThread):
         self._human_draw_card = -1
         self.humanPlay.emit(player_id)
 
-    def _human_response(self, slot):
+    def _human_response(self):
         player_id = self._active_player
+        slot = self._human_response_slot
         if slot == -1:
             self.drawPile.emit(len(self._deck), 0, False)
             self.addToDiscard(self._human_draw_card)
@@ -273,8 +309,8 @@ class Engine(QThread):
                 time.sleep(self._speed_play)
 
                 self.gameStatus.emit(self._player_name[player_id] + ": Replace discard card "
-                                     + str(self._human_discard_card) + " with " + str(return_value) + " at slot " + str(
-                    slot + 1) + ".")
+                                     + str(self._human_discard_card) + " with " + str(return_value) + " at slot " 
+                                     + str(slot + 1) + ".")
             else:
                 self._player_hand[player_id][slot] = self._human_draw_card
                 self._player_hand_viewable[player_id][slot] = 1
@@ -285,7 +321,6 @@ class Engine(QThread):
                 self.rackSlotValue.emit(layout_id, slot, str(self._human_draw_card))
                 self.addToDiscard(return_value)
                 time.sleep(self._speed_play)
-
                 self.gameStatus.emit(self._player_name[player_id] + ": Replace a draw card "
                                      + " with " + str(return_value) + " at slot " + str(slot + 1) + ".")
         self._check_racko(player_id)
@@ -310,18 +345,32 @@ class Engine(QThread):
             if not self._game_end:
                 time.sleep(self._delay_new_round)
                 self._new_round()
+            else:
+                winner = self._player_name[0]
+                hi_score = self._player_scores[0]
+                for player_id in range(1, self._number_of_players):
+                    if self._player_scores[player_id] > hi_score:
+                        winner = self._player_name[player_id]
+                        hi_score = self._player_scores[player_id]
+                self.gameStatus.emit("")
+                self.gameStatus.emit("*** " + winner + " wins the game with " + str(hi_score) + " points. ***")
         else:
             self._inactive_rack(player_id)
             player_id += 1
             if player_id == self._number_of_players:
                 player_id = 0
+            if player_id == self._dealer_id:
+                self.gameStatus.emit("")
             if self._player_list[player_id] is not None:
                 self._computer_play(player_id)
             else:
                 self._human_play(player_id)
 
     def _new_round(self):
-        for layout_id in self._player_layout:
+        for player_id in range(self._number_of_players):
+            if self._player_list[player_id] is not None:
+                self._player_list[player_id].reset()
+            layout_id = self._player_layout[player_id]
             for slot in range(self._rack_size):
                 self.rackSlotColor.emit(layout_id, slot, 3, False)
                 self.rackSlotValue.emit(layout_id, slot, "")
@@ -336,15 +385,19 @@ class Engine(QThread):
 
     def _score_update(self):
         self._game_end = False
+        round_scores = ""
         for player_id in range(self._number_of_players):
             if player_id == self._active_player:
-                self._score_racko(player_id)
+                round_scores = round_scores + self._player_name[player_id] + " - " + str(self._score_racko(player_id)) + "  "
             else:
-                self._score_others(player_id)
+                round_scores = round_scores + self._player_name[player_id] + " - " + str(self._score_others(player_id)) + "  "
             if self._player_list[player_id] is not None:
                 layout_id = self._player_layout[player_id]
                 for slot in range(self._rack_size):
                     self.rackSlotValue.emit(layout_id, slot, str(self._player_hand[player_id][slot]))
+        self.gameStatus.emit("")
+        self.gameStatus.emit(round_scores)
+        self.gameStatus.emit("Round " + str(self._round_number) + " end.")
         self.scoresUpdate.emit(self._round_number, self._player_scores, self._game_end)
 
     def _score_others(self, player_id):
@@ -359,6 +412,7 @@ class Engine(QThread):
                 if self._player_scores[player_id] >= GAME_END:
                     self._game_end = True
                 break
+        return SCORES[count]
 
     def _score_racko(self, player_id):
         value = self._player_hand[player_id][0]
@@ -379,3 +433,4 @@ class Engine(QThread):
         self._player_scores[player_id] += SCORES_BONUS[max_count]
         if self._player_scores[player_id] >= GAME_END:
             self._game_end = True
+        return SCORES_BONUS[max_count]
