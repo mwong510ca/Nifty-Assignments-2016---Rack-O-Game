@@ -128,20 +128,14 @@ public class Player2 implements Player {
         review1b(value); 
         
         int count1a = 0;
-        int min1a = cardSize;
         for (int i = 0; i < rackSize; i++) {
             if (gapCount1a[i] == 0)
                 count1a++;
-            else if (gapCount1a[i] < min1a)
-                min1a = gapCount1a[i];
         }
         int count1b = 0;
-        int min1b = cardSize;
         for (int i = 0; i < rackSize; i++) {
             if (gapCount1b[i] == 0)
                 count1b++;
-            else if (gapCount1b[i] < min1b)
-                min1a = gapCount1b[i];
         }
 
         if (count1a > count1b) {
