@@ -2,14 +2,28 @@
 
 ### [Rack-O Game] -- Arvind Bhusnurmath, Kristen Gee, and Karen Her  
 
-Phase 1 - completed on Nov 21, 2016:  
-* Data structure.
-  * Add Player interface.  
-  * Move computer strategy for Racko.java to Player1.java.
-* UI - Given.
-  * Completed missing code.
-  * Add [scoring] as actual card game.  The player get 500 points or over to win.
-* Computer strategy - Given.
+Phase 5 - under analyzing.
+* Computer strategy - Enhancement.
+
+Phase 4 - completed on Feb 12, 2017.
+* Modify game to support 2 to 4 players, rewrite UI in pyqt5. 
+
+Phase 3 -  completed on Jan 30, 2017.  
+* Computer strategy - Improve my computer strategy by tracing known cards on deck and other player's hand.
+  1.  Computer will ignore the cards in the discard deck.
+  2.  Once the discard deck has flipped and replaced to the draw deck.  Computer knew:
+    * The 10 cards on player's hand but not the acutal order
+    * The actual card in discard pile for better decision making.
+
+* Here is the difference between Phase 2 and Phase 3:  
+  * If the player kept all cards 31 - 40 (not in order) on it's hand and not to throw them back to the discard deck.  
+  * Computer has 3 5 10 12 17 18 19 29 30 11 on it's hand.  Pending a card from 31 - 40 to fill the slot 10.  
+    * Phase 2: The round will never finish, because the computer will never fill the 
+the slot 10.  Computer estimated there are 10 chances to fill slot 10, and it won't shift the 9th card to increase chance.  
+      * Phase 3:  Once the deck has shuffled and replaced.  The computer found the player hold the card 31 - 40.  It will changed the estimates to sort the rack from 1 to 30 instead of 1 to 40.  
+
+* How to play:  
+  [Download Phase 3] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
 
 Phase 2 - completed on Jan 5, 2017.  
 [Youtube Demo]
@@ -46,29 +60,14 @@ Phase 2 - completed on Jan 5, 2017.
             o - The card has replaced from the draw pile.
             # - The card has replaced from the discard pile.</pre>
 
-Phase 3 -  completed on Jan 30, 2017.  
-* Computer strategy - Improve my computer strategy by tracing known cards on deck and other player's hand.
-  1.  Computer will ignore the cards in the discard deck.
-  2.  Once the discard deck has flipped and replaced to the draw deck.  Computer knew:
-    * The 10 cards on player's hand but not the acutal order
-    * The actual card in discard pile for better decision making.
-
-* Here is the difference between Phase 2 and Phase 3:  
-  * If the player kept all cards 31 - 40 (not in order) on it's hand and not to throw them back to the discard deck.  
-  * Computer has 3 5 10 12 17 18 19 29 30 11 on it's hand.  Pending a card from 31 - 40 to fill the slot 10.  
-    * Phase 2: The round will never finish, because the computer will never fill the 
-the slot 10.  Computer estimated there are 10 chances to fill slot 10, and it won't shift the 9th card to increase chance.  
-      * Phase 3:  Once the deck has shuffled and replaced.  The computer found the player hold the card 31 - 40.  It will changed the estimates to sort the rack from 1 to 30 instead of 1 to 40.  
-
-* How to play:  
-  [Download Phase 3] and unzip the folder.  On Terminal, type: java -jar Racko.jar  
-
-Phase 4 - completed on Feb 12, 2017.
-* Modify game to support 2 to 4 players, rewrite UI in pyqt5. 
-
-Phase 5 - in progress.
-* Computer strategy - Enhancement for 2 - 4 players, 40 - 60 cards.
-If the computer has to lose that round.  Throw a card for the least players' points.
+Phase 1 - completed on Nov 21, 2016:  
+* Data structure.
+  * Add Player interface.  
+  * Move computer strategy for Racko.java to Player1.java.
+* UI - Given.
+  * Completed missing code.
+  * Add [scoring] as actual card game.  The player get 500 points or over to win.
+* Computer strategy - Given.
 
 [Nifty Assignments 2016]: http://nifty.stanford.edu
 [Rack-O Game]: http://nifty.stanford.edu/2016/arvind-racko/
