@@ -2,9 +2,6 @@
 
 ### [Rack-O Game] -- Arvind Bhusnurmath, Kristen Gee, and Karen Her  
 
-Phase 5 - under analyzing.
-* Computer strategy - Enhancement.
-
 Phase 4 - completed on Feb 12, 2017.
 * Modify game to support 2 to 4 players, rewrite UI in pyqt5. 
 
