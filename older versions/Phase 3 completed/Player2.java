@@ -619,7 +619,7 @@ public class Player2 extends AbstractPlayer {
                     begin2 = rangeMax1b[reviewGroup - 1];
                 }
                 for (int i = val - 1; i > begin2; i--) {
-                    if (discard1b[i] > - 1 && discard1b[i] < cardKey) {
+                    if (discard1b[i] > -1 && discard1b[i] < cardKey) {
                         discard1b[i] = updatevalue;
                         gapCount1b[reviewGroup]--;
                         if (updatevalue != -1) {
@@ -640,7 +640,7 @@ public class Player2 extends AbstractPlayer {
                 
                 gapCount1b = new int[rackSize];
                 for (int i = 1; i <= cardSize; i++) {
-                    if (discard1b[i] > - 1 && discard1b[i] < rackSize) {
+                    if (discard1b[i] > -1 && discard1b[i] < rackSize) {
                         gapCount1b[discard1b[i]]++;
                     }
                 }
