@@ -5,6 +5,7 @@
 My Rack-O! game support 2 to 4 hand of cards as the real game (40 - 60 cards).  [See rules]
 A player can play with 1 to 3 computer hands.  For a 4 hands game, player may play 2 hand alternatively with 2 computer hands.
 
+<<<<<<< HEAD
 There are 3 level of computer player to choose from:
 Easy - Pick the best sorted order and fill the missing slots.
        Written by Arvind Bhusnurmath, Kristen Gee, and Karen Her - copied from [Nifty assignment 2016, Racko]
@@ -19,6 +20,10 @@ Hard - Compare both prioritize option above and pick the best choice.
 Game option:  Single round - 75 pts to win
              Full game - 500 pts to win
             Custom setting - 75 to 1000 pts to win
+=======
+Phase 4 - completed on Feb 12, 2017.
+* Modify game to support 2 to 4 players, rewrite UI in pyqt5. 
+>>>>>>> origin/master
 
 ### GUI design
 
