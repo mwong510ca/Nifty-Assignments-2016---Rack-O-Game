@@ -2,7 +2,7 @@
 [Screenshots] / [Youtube demo]![Racko Game - start up screen](screenshots/gui1.png)  
 
 My Rack-O! game support 2 to 4 hand of cards as the real game (40 - 60 cards).  [See rules]
-A player can play with 1 to 3 computer hands.  For a 4 hands game, player may play 2 hand alternatively with 2 computer hands.
+A user can play with 1 to 3 computer hands.  For a 4 hands game, user may play 2 hand alternatively with 2 computer hands.
 
 There are 3 level of computer player to choose from:
 * Easy - Pick the best sorted order and fill the missing slots.
@@ -19,10 +19,20 @@ There are 3 level of computer player to choose from:
 
 The GUI is writtern in pyqt5, using [py4j] connected to computer player support in java.  Card image use [Nifty assignment 2016, Racko].
 
-Game option:  Single round - 75 pts to win
-             Full game - 500 pts to win
-            Custom setting - 75 to 1000 pts to win
+Change the game setting from the menu bar:  
+Single round - 75 pts to win, full game - 500 pts to win, or custom setting - 75 to 1000 pts to win.
 
+Choose your choice of computer players, click "NEW" button to start the game.
+An option to show card replacement by the players.
+Blue - initial card when start the game.
+Green - card has been replaced.  If card from discard pile, also display card number.
+Yellow - player pick the card to place in discard pile.
+On player's turn, the rack will highlight in lighter color.
+
+The left rack of cards is the user's rack.  To keep the top card from discard pile, simply click the card you want to replace.  Otherwise, click the deck pile to turn over the top card from the deck pile.  Then click your card to replace it or click the deck pile again to move it to discard pile.  
+For 4 hands and play with 2 sets.  The second set is the right rack.
+
+The user may terminate the game at any time.  An option to have a computer player (Moderate level only) take over and finish the remaining game.
 
 [Development history]
 
