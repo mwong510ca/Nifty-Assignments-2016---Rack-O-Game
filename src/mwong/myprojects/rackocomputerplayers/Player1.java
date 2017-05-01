@@ -1,53 +1,73 @@
 package mwong.myprojects.rackocomputerplayers;
 
+/**
+ * Player1 extends AbstractPlayer with computer strategy from Nifty assignment 2016.
+ * It review the initial hand of card, find the best sorted order then fill the missing
+ * slots.
+ *
+ * <p>Dependencies : AbstractPlayer.java
+ *
+ * @author Arvind Bhusnurmath, Kristen Gee, and Karen Her
+ *         copied from Nifty assignment 2016, Racko
+ *         http://nifty.stanford.edu/2016/arvind-racko/
+ * @modified by Meisze Wong to matched the data structure
+ */
 public class Player1 extends AbstractPlayer {
-	private int[] bestAscendingHand;
-	private int choosePosition;
-	
-	public Player1(int size) {
-		super(size);
-	}
-	
-	/*
-	 * ------------------------------ COMPUTER STRATEGY ----------------------
-	 */
-	
-	public String toString() {
-		return "Easy";
-	}
-	
-	public byte replace(byte takeCard, boolean isDiscardCard) {
-		//int newPos = choose_position(takeCard);
-		return replaceCard(takeCard, choosePosition, isDiscardCard);
-	}
+    private int[] bestAscendingHand;
+    private int choosePosition;
+    
+    /**
+     * Initializes Player1 object.
+     */
+    public Player1(int size) {
+        super(size);
+    }
+    
+    /**
+     * Returns a string representation the difficulty level of Player1.
+     *
+     * @return a string representation the difficulty level of Player1
+     */
+    public String toString() {
+        return "Easy";
+    }
+    
+    /*
+     * ------------------------------ COMPUTER STRATEGY ----------------------
+     */
 
-	/**
-	 * @param hi - index of the second card
-	 * @param lo - index of the first card
-	 * @param higherVal - value of the higher card
-	 * @param lowerVal - value of the lower card
-	 * @return true if there are enough cards that can go between the two cards 
-	 */
-	private boolean check_if_possible(int hi, int lo, int higherVal, int lowerVal) {
-		// Checks if there are enough possible cards to put between the
-		// lower valued card and higher valued card
-		if (hi - lo > higherVal - lowerVal) {
-			return false;
-		}
-		return true;
-	}
-	
+    /**
+     * @param hi - index of the second card
+     * @param lo - index of the first card
+     * @param higherVal - value of the higher card
+     * @param lowerVal - value of the lower card
+     * @return true if there are enough cards that can go between the two cards 
+     */
+    private boolean check_if_possible(int hi, int lo, int higherVal, int lowerVal) {
+        // Checks if there are enough possible cards to put between the
+        // lower valued card and higher valued card
+        if (hi - lo > higherVal - lowerVal) {
+            return false;
+        }
+        return true;
+    }
+    
+    /*
+     * Determine which cards in the current hand should be kept. Mark the cards
+     * to be replaced with -1 and return the hand. The cards are compared by which
+     * card has the greater range of values.
+     */
     private void find_ascending_hand() {
-    	for (int i = 0; i < 10; i++) {
-	    	if ((i >= 0 && i < (9 - (cardSize - hand[i]))) || 
-	    			(i <= 9 && hand[i] < i + 1)) {
-	    		bestAscendingHand[i] = -1;
-	    	} else {
-	    		bestAscendingHand[i] = hand[i];
-	    	}
-	    }
-    	
-    	int[] ascendingHand = new int[10];
+        for (int i = 0; i < 10; i++) {
+            if ((i >= 0 && i < (9 - (cardSize - hand[i]))) || 
+                    (i <= 9 && hand[i] < i + 1)) {
+                bestAscendingHand[i] = -1;
+            } else {
+                bestAscendingHand[i] = hand[i];
+            }
+        }
+        
+        int[] ascendingHand = new int[10];
         int loIndex = 0;    // Index of the lowest valued card kept at a time
         int lower = 0;      // loIndex + 1 to remain noninclusive of that index
         int lowerVal = 0;   // Value of the card at the loIndex but incremented by one to remain noninclusive
@@ -162,7 +182,7 @@ public class Player1 extends AbstractPlayer {
         }
         
         for (int i = 0; i < 10; i++) {
-        	bestAscendingHand[i] = ascendingHand[i];
+            bestAscendingHand[i] = ascendingHand[i];
         }
     }
     /*
@@ -181,10 +201,10 @@ public class Player1 extends AbstractPlayer {
      * them.
      */
     public boolean determineUse(byte value, boolean isDiscardCard) {
-		bestAscendingHand = new int[10];
-		find_ascending_hand();
+        bestAscendingHand = new int[10];
+        find_ascending_hand();
 
-		int i = 0;
+        int i = 0;
         int lo = 0;
         int lowerIndex = 0;
         int hi = 0;
@@ -207,15 +227,15 @@ public class Player1 extends AbstractPlayer {
             if (numOfCards != 0) {
                 if (bestAscendingHand[lo] != -1 && bestAscendingHand[hi] != -1) {
                     if (within_range(value, bestAscendingHand[hi], bestAscendingHand[lo])) {
-                    	choosePosition = load_choose_position(value);
+                        choosePosition = load_choose_position(value);
                         return true;
                     }
                 } else if ((bestAscendingHand[lo] == -1 && within_range(value, bestAscendingHand[hi], 0)) || 
                         (bestAscendingHand[hi] == -1 && within_range(value, cardSize + 1, bestAscendingHand[lo]))) {
-                	// Check looking at the cards from 0 to the current card's value or the
-	                // current card's value to cardSize
-                	choosePosition = load_choose_position(value);
-                	return true;
+                    // Check looking at the cards from 0 to the current card's value or the
+                    // current card's value to cardSize
+                    choosePosition = load_choose_position(value);
+                    return true;
                 }
             }
 
@@ -232,7 +252,7 @@ public class Player1 extends AbstractPlayer {
      * in and place the card next to the card with the closer value.
      */
     private int load_choose_position(int card) {
-    	int i = 0;
+        int i = 0;
         int lo = 0;
         int hi = 0;
         while (i < 10) {
@@ -266,9 +286,9 @@ public class Player1 extends AbstractPlayer {
                     }
                 }
             // Determine whether the card should be in the last slot or closer to the
-	        // lower card
-	        } else if (i == 9 && bestAscendingHand[9] == -1) {
-            	if (within_range(card, cardSize + 1, bestAscendingHand[lo])) {
+            // lower card
+            } else if (i == 9 && bestAscendingHand[9] == -1) {
+                if (within_range(card, cardSize + 1, bestAscendingHand[lo])) {
 
                     if (cardSize - card < card - bestAscendingHand[lo]) {
                         bestAscendingHand[9] = card;
@@ -288,7 +308,27 @@ public class Player1 extends AbstractPlayer {
         return -1;
     }
 
-	public int choosePosition(byte card) {
-		return choosePosition;
-	}
+    /**
+     * Determine the slot of rack to be replace by the given card.
+     * 
+     * @param takeCard the byte of card value to be keep
+     * @return integer the slot of rack to be replaced, -1 if ignored
+     */
+    public int choosePosition(byte card) {
+        return choosePosition;
+    }
+    
+    /**
+     * Search through the player's hand and replace the new card with the
+     * selected card. Throw the selected card to the discard pile.
+     * 
+     * @param takeCard the byte of card value to keep
+     * @param isDiscardCard the boolean represent the given card from discard pile
+     *        or deck pile
+     * @return byte the original card value to be replaced
+     */
+    public byte replace(byte takeCard, boolean isDiscardCard) {
+        //int newPos = choose_position(takeCard);
+        return replaceCard(takeCard, choosePosition, isDiscardCard);
+    }
 }
