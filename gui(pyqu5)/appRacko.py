@@ -121,11 +121,13 @@ class GameRacko(QMainWindow, MainWindow):
              self.player4Slot06, self.player4Slot07, self.player4Slot08, self.player4Slot09, self.player4Slot10]]
         self.winning_score = 500
         # initial maps with final values
-        self.computer_player = {0: self._gateway.entry_point.setPlayerEasy,
-                                1: self._gateway.entry_point.setPlayerModerate,
-                                2: self._gateway.entry_point.setPlayerHard,
+        self.replacement_code = 5
+        self.computer_player = {0: self._gateway.entry_point.getPlayerEasy,
+                                1: self._gateway.entry_point.getPlayerModerate,
+                                2: self._gateway.entry_point.getPlayerHard,
                                 3: None,
-                                4: None}
+                                4: None,
+                                self.replacement_code: self._gateway.entry_point.getPlayerReplacement}
 
         # load game engine
         self._game_engine = Engine(SIZE_RACK, self.winning_score)
@@ -439,7 +441,7 @@ class GameRacko(QMainWindow, MainWindow):
             self.layout3_lock = False
 
     def game_computer_take_over(self):
-        computer_replacement = self._gateway.setPlayerReplacement()
+        computer_replacement = self.computer_player[self.replacement_code]()
         self._game_engine.setHumanReplacement(True, computer_replacement)
         change_speed = True
 
@@ -453,7 +455,7 @@ class GameRacko(QMainWindow, MainWindow):
                                                  QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
                     if reply == QMessageBox.Yes:
                         change_speed = True
-                        computer_replacement2 = self._gateway.setPlayerReplacement()
+                        computer_replacement2 = self.computer_player[self.replacement_code]()
                         self._game_engine.setHumanReplacement(False, computer_replacement2)
 
         if change_speed:
@@ -536,15 +538,16 @@ if __name__ == "__main__":
     try:
         p = subprocess.Popen(['java', '-jar', 'RackoComputerPlayersGateway.jar', str(port_number)])
         time.sleep(1)
+        gateway_server = JavaGateway(GatewayClient(address=host, port=port_number))
+        app = QApplication(sys.argv)
+        window = GameRacko(gateway_server)
+        window.show()
+        while app.exec_() > 0:
+            time.sleep(1)
+        gateway_server.shutdown()
+        sys.exit()
     except:
+        gateway_server.shutdown()
         p.kill()
         sys.exit()
 
-    gateway_server = JavaGateway(GatewayClient(address=host, port=port_number))
-    app = QApplication(sys.argv)
-    window = GameRacko(gateway_server)
-    window.show()
-    while app.exec_() > 0:
-        time.sleep(1)
-    gateway_server.shutdown()
-    sys.exit()

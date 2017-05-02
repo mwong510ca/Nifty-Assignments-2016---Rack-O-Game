@@ -2,10 +2,10 @@ package mwong.myprojects.rackocomputerplayers;
 
 
 /**
- * HandAnalyzer1 extends AbstractHandAnalyzer with main analysis function.
+ * HandAnalyzer3 extends AbstractHandAnalyzer with main analysis function.
  *
  * <p>Dependencies : AbstractHandAnalyzer.java
- * 
+ *
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
@@ -16,31 +16,31 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
     public HandAnalyzer2(int cardSize, int rackSize, int cardKey) {
         super(cardSize, rackSize, cardKey);
     }
-    
+
     /**
      * Loop the following until no change.
-     * 1. If the card fall in assigned range, change the range and even out. 
-     * 2. If the card fall in next assigned range, change the range and even out. 
-     * 3. If the card fall in previous assigned range, change the range and even out. 
+     * 1. If the card fall in assigned range, change the range and even out.
+     * 2. If the card fall in next assigned range, change the range and even out.
+     * 3. If the card fall in previous assigned range, change the range and even out.
      */
-    void analysis(byte[] hand) {    
+    void analysis(byte[] hand) {
         int loopCount = 0;
-        
+
         while (true) {
             if (loopCount++ == rackSize) {
                 System.exit(0);
-            }            
-            
+            }
+
             boolean[] scan = new boolean[rackSize];
             for (int i = 0; i < rackSize; i++) {
                 if (gapCount[i] == 0) {
                     scan[i] = true;
                 }
             }
-                        
+
             int reviewGroup = -1;
             while (true) {
-                
+
                 reviewGroup = -1;
                 for (int i = 0; i < rackSize; i++) {
                     int group = groupHand[i];
@@ -53,9 +53,9 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                             }
                             break;
                         }
-                    } 
+                    }
                 }
-                
+
                 if (reviewGroup == -1) {
                     for (int i = rackSize - 1; i >= 0; i--) {
                         if (!scan[i]) {
@@ -74,15 +74,15 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                         }
                                         reviewGroup = group;
                                         break;
-                                    } 
+                                    }
                                 } else {
                                     break;
                                 }
-                            } 
+                            }
                         }
                     }
                 }
-                
+
                 if (reviewGroup == -1) {
                     for (int i = rackSize - 2; i > 0; i--) {
                         if (!scan[i] && gapCount[i - 1] > 0) {
@@ -97,19 +97,21 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                             }
                                         }
                                     }
-                                    
-                                    if (shift < 1)
+
+                                    if (shift < 1) {
                                         continue;
-                                    
+                                    }
+
                                     if (gapCount[i - 1] == 0) {
-                                        System.err.println("ERROR - recheck A ........." + i + " " + j);
+                                        System.err.println("ERROR - recheck ..." + i + " " + j);
                                         System.out.println("line 89: Analysis2");
-                                        for (int value : hand)
+                                        for (int value : hand) {
                                             System.out.print(value + "\t");
+                                        }
                                         System.out.println();
                                         System.exit(1);
                                     }
-                                    
+
                                     if (i > 1 && gapCount[i - 2] > 0) {
                                         rangeMax[i - 1] = j - 1;
                                         rangeMax[i] = j;
@@ -120,10 +122,11 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                     scan[i - 1] = true;
                                     break;
                                 }
-                            } 
-                            
-                            if (reviewGroup != -1)
+                            }
+
+                            if (reviewGroup != -1) {
                                 break;
+                            }
                         }
                     }
                 }
@@ -145,44 +148,46 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                     if (shift < 1) {
                                         continue;
                                     }
-                                    
+
                                     if (gapCount[i + 1] == 0) {
-                                        System.err.println("ERROR - recheck B ........." + i + " " + j);
+                                        System.err.println("ERROR - recheck ..." + i + " " + j);
                                         System.out.println("line 134: Analysis2");
-                                        for (int value : hand)
+                                        for (int value : hand) {
                                             System.out.print(value + "\t");
+                                        }
                                         System.out.println();
                                         System.exit(1);
                                     }
                                     rangeMax[i + 1] = j - 1;
                                     rangeMax[i + 2] = j;
-                                    
+
                                     reviewGroup = i + 1;
                                     scan[i + 1] = true;
                                     break;
                                 }
-                            } 
-                            
-                            if (reviewGroup != -1)
+                            }
+
+                            if (reviewGroup != -1) {
                                 break;
+                            }
                         }
                     }
                 }
-                
+
                 if (reviewGroup == -1) {
                     break;
                 }
-                                
+
                 int val = hand[reviewGroup];
-                
+
                 int updatevalue = reviewGroup + 1;
                 if (updatevalue == rackSize || gapCount[reviewGroup + 1] == 0) {
                     updatevalue = -1;
                 }
-                
+
                 for (int i = val + 1; i <= rangeMax[reviewGroup + 2]; i++) {
                     if (discard[i] > -1 && discard[i] < cardKey) {
-                        discard[i] = updatevalue;    
+                        discard[i] = updatevalue;
                         gapCount[reviewGroup]--;
                         if (updatevalue != -1) {
                             gapCount[updatevalue]++;
@@ -194,15 +199,15 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                         } else {
                             groupHand[group] = reviewGroup;
                         }
-                        scan[updatevalue] = false; 
-                    } 
+                        scan[updatevalue] = false;
+                    }
                 }
-                
+
                 updatevalue = reviewGroup - 1;
                 if (reviewGroup == 0 || gapCount[reviewGroup - 1] == 0) {
                     updatevalue = -1;
                 }
-                
+
                 int begin2 = 0;
                 if (reviewGroup > 0) {
                     begin2 = rangeMax[reviewGroup - 1];
@@ -222,11 +227,11 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                             groupHand[group] = reviewGroup;
                         }
                         scan[updatevalue] = false;
-                    } 
+                    }
                 }
-                
+
                 scan[reviewGroup] = true;
-                
+
                 gapCount = new int[rackSize];
                 for (int i = 1; i <= cardSize; i++) {
                     if (discard[i] > -1 && discard[i] < rackSize) {
@@ -234,20 +239,20 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                     }
                 }
             }
-            
+
             boolean completed = true;
-            int i = 0;
-            
-            while (i < rackSize - 1) {
-                if (gapCount[i] == 0) {
-                    i++;
+            int slot = 0;
+
+            while (slot < rackSize - 1) {
+                if (gapCount[slot] == 0) {
+                    slot++;
                     continue;
                 }
-                
-                int min = gapCount[i];
-                int max = gapCount[i];
-                int total = gapCount[i];
-                int begin = i;
+
+                int min = gapCount[slot];
+                int max = gapCount[slot];
+                int total = gapCount[slot];
+                int begin = slot;
                 for (int j = begin + 1; j < rackSize; j++) {
                     int val = gapCount[j];
                     if (val > 0) {
@@ -258,8 +263,8 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                         if (val > max) {
                             max = val;
                         }
-                    } 
-                    
+                    }
+
                     if (val == 0) {
                         if (max > min + 1) {
                             completed = false;
@@ -267,7 +272,7 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                             int aveMax = aveMin + 1;
                             int numAveMax = total - aveMin * (j - begin);
                             int group = begin;
-                            int k = rangeMax[group] + 1;
+                            int neighbor = rangeMax[group] + 1;
                             while (total > 0) {
                                 int count = aveMin;
                                 if (numAveMax > 0) {
@@ -276,44 +281,45 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                 total -= count;
                                 gapCount[group] = count;
                                 while (count > 0) {
-                                    if (discard[k] < rackSize && discard[k] > -2) {
-                                        discard[k] = group;
+                                    if (discard[neighbor] < rackSize && discard[neighbor] > -2) {
+                                        discard[neighbor] = group;
                                         count--;
                                     } else {
                                         for (int pos = 0; pos < rackSize; pos++) {
-                                            if (hand[pos] == k) {
+                                            if (hand[pos] == neighbor) {
                                                 groupHand[pos] = group;
                                                 break;
                                             }
                                         }
                                     }
-                                    k++;
+                                    neighbor++;
                                 }
-                                rangeMax[group + 1] = k - 1;
+                                rangeMax[group + 1] = neighbor - 1;
                                 group++;
                                 numAveMax--;
                             }
 
-                            while (discard[k] > rackSize && discard[k] != cardKey + j) {
-                                rangeMax[group] = k;
-                                k++;
-                            }                            
+                            while (discard[neighbor] > rackSize
+                                    && discard[neighbor] != cardKey + j) {
+                                rangeMax[group] = neighbor;
+                                neighbor++;
+                            }
                         }
-                        i = j + 1;
+                        slot = j + 1;
                         break;
                     }
-                    
+
                     // reach the last one...
                     if (j == rackSize - 1) {
                         if (max > min + 1) {
                             completed = false;
                             int aveMin = total / (j - begin + 1);
                             int aveMax = aveMin + 1;
-                            int numAveMax = total - aveMin * (j-begin + 1);
+                            int numAveMax = total - aveMin * (j - begin + 1);
                             int group = rackSize - 1;
-                            int k = cardSize;
+                            int neighbor = cardSize;
                             while (total > 0) {
-                                rangeMax[group + 1] = k;
+                                rangeMax[group + 1] = neighbor;
                                 int count = aveMin;
                                 if (numAveMax > 0) {
                                     count = aveMax;
@@ -321,30 +327,31 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                 total -= count;
                                 gapCount[group] = count;
                                 while (count > 0) {
-                                    if (discard[k] < rackSize && discard[k] > -2) {
-                                        discard[k] = group;
+                                    if (discard[neighbor] < rackSize && discard[neighbor] > -2) {
+                                        discard[neighbor] = group;
                                         count--;
                                     } else {
                                         for (int pos = 0; pos < rackSize; pos++) {
-                                            if (hand[pos] == k) {
+                                            if (hand[pos] == neighbor) {
                                                 groupHand[pos] = group;
                                                 break;
                                             }
                                         }
                                     }
-                                    k--;
+                                    neighbor--;
                                 }
-                                
-                                while (discard[k] > rackSize && k > rangeMax[begin - 1] + 1) {
+
+                                while (discard[neighbor] > rackSize
+                                        && neighbor > rangeMax[begin - 1] + 1) {
                                     for (int pos = 0; pos < rackSize; pos++) {
-                                        if (hand[pos] == k) {
+                                        if (hand[pos] == neighbor) {
                                             if (group > 0 && gapCount[group - 1] == 0) {
                                                 groupHand[pos] = group - 1;
                                             } else {
                                                 groupHand[pos] = group;
                                             }
-                                            
-                                            k--; 
+
+                                            neighbor--;
                                             break;
                                         }
                                     }
@@ -353,12 +360,12 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
                                 numAveMax--;
                             }
                         }
-                        i = j;
+                        slot = j;
                         break;
                     }
-                }                
+                }
             }
-            
+
             if (completed) {
                 break;
             }

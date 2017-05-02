@@ -1,8 +1,9 @@
 package mwong.myprojects.rackocomputerplayers;
 
+import py4j.GatewayServer;
+
 import java.util.Random;
 
-import py4j.GatewayServer;
 
 /**
  * GatewayServerRankoComputerPlayers for pyqt5 GUI front end to connect to
@@ -27,6 +28,12 @@ public class GatewayServerRackoComputerPlayers {
         players = new Player[4];
     }
 
+    /**
+     * Set the number of players and card size for the Racko game.
+     *
+     * @param total the intrger of total number of players
+     * @param cardSize the integer of the card size
+     */
     public void setNumberOfPlayers(int total, int cardSize) {
         if (total < minPlayers || total > maxPlayers) {
             throw new IllegalArgumentException();
@@ -35,8 +42,14 @@ public class GatewayServerRackoComputerPlayers {
         numberOfPlayers = total;
         replacementID = total;
     }
-    
-    public Player setPlayerEasy(int id) {
+
+    /**
+     * Generate and return the computer player object at difficulty level Easy.
+     *
+     * @param id the player ID of the of the game
+     * @return the computer player object
+     */
+    public Player getPlayerEasy(int id) {
         if (id < minPlayers || id > numberOfPlayers) {
             throw new IllegalArgumentException();
         }
@@ -44,7 +57,13 @@ public class GatewayServerRackoComputerPlayers {
         return players[id - 1];
     }
 
-    public Player setPlayerModerate(int id) {
+    /**
+     * Generate and return the computer player object at difficulty level Moderate.
+     *
+     * @param id the player ID of the of the game
+     * @return the computer player object
+     */
+    public Player getPlayerModerate(int id) {
         if (id < minPlayers || id > numberOfPlayers) {
             throw new IllegalArgumentException();
         }
@@ -57,7 +76,13 @@ public class GatewayServerRackoComputerPlayers {
         return players[id - 1];
     }
 
-    public Player setPlayerHard(int id) {
+    /**
+     * Generate and return the computer player object at difficulty level Hard.
+     *
+     * @param id the player ID of the of the game
+     * @return the computer player object
+     */
+    public Player getPlayerHard(int id) {
         if (id < minPlayers || id > numberOfPlayers) {
             throw new IllegalArgumentException();
         }
@@ -65,7 +90,12 @@ public class GatewayServerRackoComputerPlayers {
         return players[id - 1];
     }
 
-    public Player setPlayerReplacement() {
+    /**
+     * Generate and return the computer player object to replace the user.
+     *
+     * @return the computer player object
+     */
+    public Player getPlayerReplacement() {
         if (replacementID >= maxPlayers) {
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -89,7 +119,8 @@ public class GatewayServerRackoComputerPlayers {
         if (port < 25335 || port > 65535) {
             throw new IllegalArgumentException("invalid port : " + port);
         }
-        GatewayServer gatewayServer = new GatewayServer(new GatewayServerRackoComputerPlayers(), port);
+        GatewayServer gatewayServer
+            = new GatewayServer(new GatewayServerRackoComputerPlayers(), port);
         gatewayServer.start();
         System.out.println("Gateway server for Racko Computer Players started using port " + port);
     }

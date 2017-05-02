@@ -3,15 +3,18 @@ package mwong.myprojects.rackocomputerplayers;
 
 /**
  * RangeOptimizer is the tool to determine the replacement slot for cards from discard pile
- * and deck pile of Racko game.  It expand the range to sort the missing slot and keep the 
+ * and deck pile of Racko game.  It expand the range to sort the missing slot and keep the
  * cards in sequence for higher score.
  *
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
 public class RangeOptimizer {
-    private int cardSize, rackSize, cardKey, aveRange;
-    
+    private int cardSize;
+    private int rackSize;
+    private int cardKey;
+    private int aveRange;
+
     /**
      * Initializes RangeOptimizer object.
      */
@@ -23,15 +26,15 @@ public class RangeOptimizer {
     }
 
     //expand the range to sort the missing slot and keep the cards in sequence for higher score
-    public void optimizeNow(int offRange, boolean aggressivePlayer, byte[] hand, int[] gapCount, int[] rangeMax, 
-            int[] discardReplacement, int[] drawReplacement) {
+    void optimizeNow(int offRange, boolean aggressivePlayer, byte[] hand, int[] gapCount,
+            int[] rangeMax, int[] discardReplacement, int[] drawReplacement) {
         System.arraycopy(discardReplacement, 1, drawReplacement, 1, cardSize);
 
         for (int i = 0; i < 9; i++) {
             if (gapCount[i] == 0 && gapCount[i + 1] == 0) {
-            // ... i0 0 ....
+                /// ... i0 0 ....
                 if (i == 0 && gapCount[2] > 0) {
-                // i0 0 n ...
+                    // i0 0 n ...
                     if (hand[2] < hand[1] && hand[2] > hand[0]) {
                         for (int j = 1; j < hand[2]; j++) {
                             if (drawReplacement[j] == -1) {
@@ -41,7 +44,7 @@ public class RangeOptimizer {
                             }
                         }
                     }
-                    
+
                     int count = 0;
                     for (int j = hand[0] + 1; j < hand[1]; j++) {
                         if (drawReplacement[j] == -1) {
@@ -49,7 +52,7 @@ public class RangeOptimizer {
                         }
                     }
                     int cutoff = (int) Math.floor(count / 2);
-                    
+
                     for (int j = hand[0] + 1; j < hand[1]; j++) {
                         if (drawReplacement[j] == -1) {
                             if (count-- > cutoff) {
@@ -60,7 +63,7 @@ public class RangeOptimizer {
                         }
                     }
                 } else if  (i == 8 && gapCount[7] > 0) {
-                // .... n i0 0
+                    // .... n i0 0
                     if (hand[7] > hand[8] && hand[7] < hand[9]) {
                         for (int j = hand[7] + 1; j < hand[9]; j++) {
                             if (discardReplacement[j] == -1) {
@@ -70,7 +73,7 @@ public class RangeOptimizer {
                             }
                         }
                     }
-                    
+
                     int count = 0;
                     for (int j = hand[8] + 1; j < hand[9]; j++) {
                         if (discardReplacement[j] == -1) {
@@ -78,7 +81,7 @@ public class RangeOptimizer {
                         }
                     }
                     int cutoff = (int) Math.floor(count / 2);
-                    
+
                     for (int j = hand[9] - 1; j > hand[8]; j--) {
                         if (discardReplacement[j] == -1) {
                             if (count-- > cutoff) {
@@ -90,7 +93,7 @@ public class RangeOptimizer {
                     }
                 } else if (i > 0 && i < 8) {
                     if (gapCount[i - 1] > 0 && gapCount[i + 2] == 0) {
-                    // .... n i0 0 _0 ....
+                        // .... n i0 0 _0 ....
                         if (hand[i - 1] > hand[i] && hand[i - 1] < hand[i + 1]) {
                             for (int j = hand[i] + 1; j < hand[i + 1]; j++) {
                                 if (discardReplacement[j] == -1) {
@@ -101,17 +104,18 @@ public class RangeOptimizer {
                                     drawReplacement[j] = i;
                                 }
                             }
-                        } else { 
+                        } else {
                             int count = 0;
                             for (int j = hand[i] + 1; j < hand[i + 1]; j++) {
                                 if (discardReplacement[j] == -1) {
                                     count++;
                                 }
                             }
-                            if (count % 2 == 1)
+                            if (count % 2 == 1) {
                                 count++;
+                            }
                             int cutoff = count / 2;
-                            
+
                             for (int j = hand[i] + 1; j < hand[i + 1]; j++) {
                                 if (discardReplacement[j] == -1) {
                                     if (--count >= cutoff) {
@@ -123,8 +127,7 @@ public class RangeOptimizer {
                             }
                         }
                     } else if (gapCount[i - 1] == 0 && gapCount[i + 2] > 0) {
-                    // .... 0_ i0 0 n ....
-                        // i = 3
+                        // .... 0_ i0 0 n ....
                         if (hand[i + 2] > hand[i] && hand[i + 2] < hand[i + 1]) {
                             for (int j = hand[i] + 1; j < hand[i + 2]; j++) {
                                 if (discardReplacement[j] == -1) {
@@ -138,7 +141,7 @@ public class RangeOptimizer {
                                     drawReplacement[j] = i + 1;
                                 }
                             }
-                        } else { 
+                        } else {
                             int count = 0;
                             for (int j = hand[i] + 1; j < hand[i + 1]; j++) {
                                 if (discardReplacement[j] == -1) {
@@ -146,7 +149,7 @@ public class RangeOptimizer {
                                 }
                             }
                             int cutoff = (int) Math.floor(count / 2);
-                            
+
                             for (int j = hand[i] + 1; j < hand[i + 1]; j++) {
                                 if (discardReplacement[j] == -1) {
                                     if (count-- > cutoff) {
@@ -158,7 +161,7 @@ public class RangeOptimizer {
                             }
                         }
                     } else if (gapCount[i - 1] > 0 && gapCount[i + 2] > 0) {
-                    // .... n i0 0 n ....
+                        // .... n i0 0 n ....
                         int gapPlusL = 0;
                         if (hand[i - 1] > hand[i] && hand[i - 1] < hand[i + 1]) {
                             for (int j = hand[i - 1] + 1; j < hand[i + 1]; j++) {
@@ -179,53 +182,54 @@ public class RangeOptimizer {
                                 }
                             }
                         }
-                                                
+
                         int shift = 0;
                         for (int j = rangeMax[i - 1] + 1; j < rangeMax[i + 2]; j++) {
                             if (drawReplacement[j] == -1) {
                                 shift++;
                             }
                         }
-                        
+
                         int expandL = gapCount[i - 1];
                         int expandR = gapCount[i + 2];
-                        int j = hand[i] + 1;
-                        while (expandR > expandL && shift > 0 && j < hand[i + 1]) {
-                            if (drawReplacement[j] == -1) {
-                                drawReplacement[j] = i;
+                        int neighbor = hand[i] + 1;
+                        while (expandR > expandL && shift > 0 && neighbor < hand[i + 1]) {
+                            if (drawReplacement[neighbor] == -1) {
+                                drawReplacement[neighbor] = i;
                                 expandL++;
                                 shift--;
                             }
-                            j++;
+                            neighbor++;
                         }
-                        j = hand[i + 1] - 1;
-                        while (expandR < expandL && shift > 0 && j > hand[i]) {
-                            if (drawReplacement[j] == -1) {
-                                drawReplacement[j] = i + 1;
+                        neighbor = hand[i + 1] - 1;
+                        while (expandR < expandL && shift > 0 && neighbor > hand[i]) {
+                            if (drawReplacement[neighbor] == -1) {
+                                drawReplacement[neighbor] = i + 1;
                                 expandR++;
                                 shift--;
                             }
-                            j--;
+                            neighbor--;
                         }
-                        
+
                         if (shift > 0) {
                             shift /= 2;
-                            for (j = hand[i + 1] - 1; j > hand[i]; j--) {
-                                if (drawReplacement[j] == -1) {
+                            for (neighbor = hand[i + 1] - 1; neighbor > hand[i]; neighbor--) {
+                                if (drawReplacement[neighbor] == -1) {
                                     if (shift-- > 0) {
-                                        drawReplacement[j] = i + 1;
-                                    } else 
-                                        drawReplacement[j] = i;
+                                        drawReplacement[neighbor] = i + 1;
+                                    } else {
+                                        drawReplacement[neighbor] = i;
+                                    }
                                 }
                             }
                         }
-                        
+
                         gapCount[i - 1] += gapPlusL;
                         gapCount[i + 2] += gapPlusR;
                     }
-                } 
+                }
             } else if (i == 0 && gapCount[0] == 0 && gapCount[1] > 0) {
-            // 0 n 0 .....
+                // 0 n 0 .....
                 if (hand[1] < hand[0]) {
                     for (int j = 1; j < hand[0]; j++) {
                         if (discardReplacement[j] == -1) {
@@ -234,8 +238,8 @@ public class RangeOptimizer {
                             gapCount[1]++;
                         }
                     }
-                } 
-                
+                }
+
                 if (hand[1] < hand[0] || gapCount[2] == 0) {
                     int count = 0;
                     for (int j = 1; j < hand[0]; j++) {
@@ -244,7 +248,7 @@ public class RangeOptimizer {
                         }
                     }
                     int cutoff = (int) Math.floor(count / 2);
-                    
+
                     for (int j = 1; j < hand[0]; j++) {
                         if (discardReplacement[j] == -1) {
                             if (--count >= cutoff) {
@@ -257,7 +261,7 @@ public class RangeOptimizer {
                 }
             } else if (i == 8 && gapCount[8] > 0 && gapCount[9] == 0
                     && gapCount[7] == 0) {
-            // .... 0 n 0
+                // .... 0 n 0
                 int count = 0;
                 for (int j = hand[9] + 1; j <= cardSize; j++) {
                     if (discardReplacement[j] == -1) {
@@ -265,7 +269,7 @@ public class RangeOptimizer {
                     }
                 }
                 int cutoff = (int) Math.floor(count / 2);
-                
+
                 for (int j = cardSize; j > hand[9]; j--) {
                     if (discardReplacement[j] == -1) {
                         if (count-- > cutoff) {
@@ -275,7 +279,7 @@ public class RangeOptimizer {
                         }
                     }
                 }
-            } 
+            }
         }
         if (gapCount[9] == 0 && hand[8] > hand[9]) {
             for (int i = hand[8] + 1; i <= cardSize; i++) {
@@ -307,7 +311,7 @@ public class RangeOptimizer {
                         expand++;
                     }
                 }
-                
+
                 if (offRange < 3) {
                     if (i - 2 < 0) {
                         for (int j = 1; j < rangeMax[i - 1]; j++) {
@@ -326,7 +330,7 @@ public class RangeOptimizer {
                             }
                         }
                     }
-                    
+
                     for (int j = rangeMax[i + 2] + 1; j < rangeMax[i + 3]; j++) {
                         discardReplacement[j] = drawReplacement[j];
                         if (discardReplacement[j] == -1 && expand < 6) {
@@ -343,14 +347,16 @@ public class RangeOptimizer {
         for (int i = 0; i < rackSize; i++) {
             if (gapCount[i] > 0) {
                 break;
-            } else
+            } else {
                 pos = i;
+            }
         }
         if (pos > -1) {
             int expand = gapCount[pos + 1];
             for (int i = pos; i >= 0 && expand < 6; i--) {
-                if (i > 0 && hand[i] - 1 == hand[i - 1])
+                if (i > 0 && hand[i] - 1 == hand[i - 1]) {
                     break;
+                }
                 if (expand < 6) {
                     if (pos == i) {
                         int count = 0;
@@ -360,7 +366,7 @@ public class RangeOptimizer {
                                 count++;
                             }
                         }
-                        
+
                         int cutoff = (int) Math.floor(count / 2);
                         for (int j = rangeMax[i] + 1; j < rangeMax[i + 1]; j++) {
                             if (drawReplacement[j] == -1) {
@@ -377,7 +383,7 @@ public class RangeOptimizer {
                                     discardReplacement[j] = drawReplacement[j];
                                 }
                             }
-                            
+
                             if (discardReplacement[j] < cardKey) {
                                 count--;
                             }
@@ -402,19 +408,21 @@ public class RangeOptimizer {
                 }
             }
         }
-        
+
         pos = -1;
         for (int i = 9; i < rackSize; i--) {
             if (gapCount[i] > 0) {
                 break;
-            } else
+            } else {
                 pos = i;
+            }
         }
         if (pos > -1) {
             int expand = gapCount[pos - 1];
             for (int i = pos; i <= 9 && expand < 6; i++) {
-                if (i < 9 && hand[i] + 1 == hand[i + 1])
+                if (i < 9 && hand[i] + 1 == hand[i + 1]) {
                     break;
+                }
                 if (expand < 6) {
                     if (i == pos) {
                         int count = 0;
@@ -424,7 +432,7 @@ public class RangeOptimizer {
                                 count++;
                             }
                         }
-                        
+
                         int cutoff = (int) Math.floor(count / 2);
                         for (int j = rangeMax[i + 1] + 1; j <= rangeMax[i + 2]; j++) {
                             if (drawReplacement[j] == -1) {
@@ -433,7 +441,7 @@ public class RangeOptimizer {
                                 } else {
                                     drawReplacement[j] = i - 1;
                                 }
-                                
+
                                 if (offRange < 3) {
                                     discardReplacement[j] = drawReplacement[j];
                                 }
@@ -442,7 +450,7 @@ public class RangeOptimizer {
                                     discardReplacement[j] = drawReplacement[j];
                                 }
                             }
-                            
+
                             if (discardReplacement[j] < cardKey) {
                                 count--;
                             }
@@ -467,11 +475,11 @@ public class RangeOptimizer {
                 }
             }
         }
-        
+
         // add sequence for higher scores ----------------------------------------*/
         int maxSeq = 1;
         for (int i = 0; i < 9;) {
-            int max = 1; 
+            int max = 1;
             for (int j = i + 1; j < 10; j++) {
                 i++;
                 if (hand[j] == hand[j - 1] + 1) {
@@ -480,24 +488,24 @@ public class RangeOptimizer {
                     break;
                 }
             }
-            if (max > maxSeq)
+            if (max > maxSeq) {
                 maxSeq = max;
+            }
         }
         if (maxSeq <= 2) {
             maxSeq = 0;
         }
-        
+
         if (maxSeq < 6) {
             for (int i = 0; i < rackSize; i++) {
                 if (gapCount[i] == 0) {
-                    //  x x x x x x n x x x x x x 
+                    //  x x x x x x n x x x x x x
                     //               n+1
                     if (i < rackSize - 1 && discardReplacement[hand[i] + 1] < rackSize) {
                         if (drawReplacement[hand[i] + 1] == -1) {
                             if (gapCount[i + 1] > aveRange) {
-                                //discardReplacement[value[i] + 1] = i + 1;
                                 drawReplacement[hand[i] + 1] = i + 1;
-                            } else if (gapCount[i + 1] == 0) { 
+                            } else if (gapCount[i + 1] == 0) {
                                 int seqL = 1;
                                 for (int j = i - 1; j >= 0; j--) {
                                     if (gapCount[j] == 0 && hand[j] + 1 == hand[j + 1]) {
@@ -505,31 +513,34 @@ public class RangeOptimizer {
                                     } else {
                                         break;
                                     }
-                                } 
-                                
+                                }
+
                                 if (seqL >= maxSeq) {
                                     if (i == 8)  {
-                                        if (seqL > 2 && aggressivePlayer) 
+                                        if (seqL > 2 && aggressivePlayer) {
                                             discardReplacement[hand[i] + 1] = i + 1;
+                                        }
                                         drawReplacement[hand[i] + 1] = i + 1;
                                     } else {
                                         if (hand[i + 1] + 1 == hand[i + 2]) {
                                             int seqR = 1;
                                             for (int j = i + 2; j < rackSize; j++) {
-                                                if (gapCount[j] == 0 && hand[j] - 1 == hand[j - 1]) {
+                                                if (gapCount[j] == 0
+                                                        && hand[j] - 1 == hand[j - 1]) {
                                                     seqR++;
                                                 }
                                             }
                                             if (seqL >= seqR) {
-                                                if (seqL > 2 && aggressivePlayer) 
+                                                if (seqL > 2 && aggressivePlayer) {
                                                     discardReplacement[hand[i] + 1] = i + 1;
+                                                }
                                                 drawReplacement[hand[i] + 1] = i + 1;
-                                            }                                
+                                            }
                                         } else {
-                                            if (seqL > 2 && aggressivePlayer) 
+                                            if (seqL > 2 && aggressivePlayer) {
                                                 discardReplacement[hand[i] + 1] = i + 1;
+                                            }
                                             drawReplacement[hand[i] + 1] = i + 1;
-                                            
                                         }
                                     }
                                 }
@@ -537,7 +548,7 @@ public class RangeOptimizer {
                         }
                     }
 
-                    //  x x x x x x n x x x x x x 
+                    //  x x x x x x n x x x x x x
                     //           n-1
                     if (i > 0 && discardReplacement[hand[i] - 1] < rackSize) {
                         if (drawReplacement[hand[i] - 1] == -1) {
@@ -555,40 +566,46 @@ public class RangeOptimizer {
                                 }
                                 if (seqR >= maxSeq) {
                                     if (i == 1) {
-                                        if (seqR > 2 && aggressivePlayer)
+                                        if (seqR > 2 && aggressivePlayer) {
                                             discardReplacement[hand[i] - 1] = i - 1;
+                                        }
                                         drawReplacement[hand[i] - 1] = i - 1;
                                     } else {
                                         // 4 5 7 8 .... i = 1
                                         if (hand[i - 2] + 1 == hand[i - 1]) {
                                             int seqL = 1;
                                             for (int j = i - 2; j >= 0; j--) {
-                                                if (gapCount[j] == 0 && hand[j] + 1 == hand[j + 1]) {
+                                                if (gapCount[j] == 0
+                                                        && hand[j] + 1 == hand[j + 1]) {
                                                     seqL++;
                                                 }
                                             }
                                             if (seqR >= seqL) {
-                                                if (seqR > 2 && aggressivePlayer)
+                                                if (seqR > 2 && aggressivePlayer) {
                                                     discardReplacement[hand[i] - 1] = i - 1;
+                                                }
                                                 drawReplacement[hand[i] - 1] = i - 1;
-                                            }            
+                                            }
                                         } else {
-                                            if (seqR > 2 && aggressivePlayer)
+                                            if (seqR > 2 && aggressivePlayer) {
                                                 discardReplacement[hand[i] - 1] = i - 1;
+                                            }
                                             drawReplacement[hand[i] - 1] = i - 1;
                                         }
                                     }
                                 }
                             }
                         }
-                    }                        
+                    }
                 }
             }
         }
     }
-    
-    // expand the range to sort the missing slot exclude the sequence of cards, until enough chances to fill the solt.
-    public void optimizeMore(int aveRange, byte[] hand, int[] gapCount, int[] discardReplacement, int[] drawReplacement) {
+
+    // expand the range to sort the missing slot exclude the sequence of cards,
+    // until enough chances to fill the solt.
+    void optimizeMore(int aveRange, byte[] hand, int[] gapCount, int[] discardReplacement,
+            int[] drawReplacement) {
         int origin = 0;
         for (int i = 0; i < rackSize; i++) {
             if (gapCount[i] > 0) {
@@ -603,7 +620,8 @@ public class RangeOptimizer {
                 break;
             }
             for (int j = lo; j < hand[i]; j++) {
-                if (drawReplacement[j] == -1 || (drawReplacement[j] >= 0 && drawReplacement[j] < cardKey)) {
+                if (drawReplacement[j] == -1 || (drawReplacement[j] >= 0
+                        && drawReplacement[j] < cardKey)) {
                     expansion[i]++;
                 }
             }
@@ -614,15 +632,16 @@ public class RangeOptimizer {
             if (i == origin) {
                 break;
             }
-            
+
             for (int j = hi; j > hand[i]; j--) {
-                if (drawReplacement[j] == -1 || (drawReplacement[j] > 0 && drawReplacement[j] < cardKey)) {
+                if (drawReplacement[j] == -1 || (drawReplacement[j] > 0
+                        && drawReplacement[j] < cardKey)) {
                     expansion[i]++;
                 }
             }
             hi = hand[i] - 1;
         }
-        
+
         int count = gapCount[origin];
         int shift = 0;
         while (count < aveRange * 2 && shift < rackSize) {

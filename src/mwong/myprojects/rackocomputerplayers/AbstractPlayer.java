@@ -25,16 +25,16 @@ abstract class AbstractPlayer implements Player {
 
     /**
      * Set the player position of Racko game.
-     * 
+     *
      * @param id the integer of player position of Racko game
      */
     public void setPositionId(int id) {
         // do nothing
     }
-    
+
     /**
      * Set the winning score of Racko game.
-     * 
+     *
      * @param score the integer represent the minimum score to win Racko game
      */
     public void setWinningScore(int score) {
@@ -42,8 +42,8 @@ abstract class AbstractPlayer implements Player {
     }
 
     /**
-     * Set the latest score of the given player
-     * 
+     * Set the latest score of the given player.
+     *
      * @param id the integer represent the player of the game
      * @param score the integer represent the score of the player
      */
@@ -53,7 +53,7 @@ abstract class AbstractPlayer implements Player {
 
     /**
      * Set the initial hand of cards.
-     * 
+     *
      * @param hand the byte array of rack of card values
      */
     public void setHand(byte[] hand) {
@@ -65,7 +65,7 @@ abstract class AbstractPlayer implements Player {
     }
 
     /**
-     * @return byte array of the rack of card values
+     * @return byte array of the rack of card values.
      */
     public final byte[] getHand() {
         return hand.clone();
@@ -75,9 +75,9 @@ abstract class AbstractPlayer implements Player {
      * Clear and reset the initial setting.
      */
     public void reset() {
-        // do nothing 
+        // do nothing
     }
-    
+
     // Replace the new card value at given slot and return the original card value.
     protected byte replaceCard(byte newCard, int pos, boolean isDiscardCard) {
         byte returnCard = hand[pos];
@@ -89,41 +89,41 @@ abstract class AbstractPlayer implements Player {
         }
         return returnCard;
     }
-    
+
     /**
      * When deck pile is empty, notify the discard pile has flipped over to deck pile.
      */
     public void discard2deck() {
-        // do nothing 
+        // do nothing
     }
-    
+
     /**
      * Notify the card has add to discard pile by the given player.
-     * 
+     *
      * @param card the byte of card value add to discard pile
      * @param id represent the given player
      */
     public void discardAdd(byte card, int id) {
-        // do nothing 
+        // do nothing
     }
-    
+
     /**
      * Notify the top card has removed from discard pile.
      */
     public void discardRemove() {
-        // do nothing 
+        // do nothing
     }
-    
+
     /**
      * Notify the top card has removed from deck pile.
      */
     public void deckRemove(int id) {
-        // do nothing 
+        // do nothing
     }
 
     /**
      * Monitor the given player has replaced a known card at given slot.
-     * 
+     *
      * @param card the byte of card value to keep
      * @param id represent the given player
      * @param slot represent the slot of rack to be replaced
@@ -131,10 +131,10 @@ abstract class AbstractPlayer implements Player {
     public void playerCard(byte card, int id, int slot) {
         // do nothing
     }
-    
+
     /**
      * Monitor the given player has replaced a unknown card at given slot.
-     * 
+     *
      * @param id represent the given player
      * @param slot represent the slot of rack to be replaced
      */
@@ -148,10 +148,11 @@ abstract class AbstractPlayer implements Player {
     public final void printAll() {
         for (int i = 0; i < rackSize; i++) {
             int val = hand[i];
-            if (val < 10)
+            if (val < 10) {
                 System.out.print(" " + val + " ");
-            else 
+            } else {
                 System.out.print(val + " ");
+            }
         }
         System.out.println();
     }

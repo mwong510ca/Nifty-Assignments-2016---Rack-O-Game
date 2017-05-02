@@ -41,18 +41,18 @@ public class Player2 extends AbstractPlayer {
     public String toString() {
         return "Moderate";
     }
-    
+
     /**
      * Set the initial hand of cards.
-     * 
+     *
      * @param hand the byte array of rack of card values
      */
     public void setHand(byte[] hand) {
-        super.setHand(hand);        
+        super.setHand(hand);
         System.arraycopy(hand, 0, backupHand, 0, rackSize);
         deadlock = false;
     }
-    
+
     // review the hand of cards and determine the values to keep or discard.
     protected void reviewHand() {
         boolean[] possibleHand = new boolean[cardSize + 1];
@@ -66,10 +66,10 @@ public class Player2 extends AbstractPlayer {
             possibleHand[hand[i]] = false;
             gapCount[i] = countMax;
         }
-        
+
         discardReplacement = new int[cardSize + 1];
         drawReplacement = new int[cardSize + 1];
-        
+
         int pos = 0;
         int count = 0;
         for (int i = 1; i <= cardSize; i++) {
@@ -88,7 +88,7 @@ public class Player2 extends AbstractPlayer {
         }
         rangeMax[rackSize] = cardSize;
         rangeMax[rackSize + 1] = cardSize;
-        
+
         groupHand = new int[rackSize];
         for (int i = 0; i < rackSize; i++) {
             discardReplacement[hand[i]] = cardKey + i;
@@ -104,16 +104,16 @@ public class Player2 extends AbstractPlayer {
                 }
             }
         }
-        
+
         updateGroupHand();
         handAnalyze();
-    } 
+    }
 
     // review each card belongs to designated range
     protected void updateGroupHand() {
         for (int i = 0; i < rackSize; i++) {
             int val = hand[i];
-            
+
             if (val > rangeMax[rackSize]) {
                 groupHand[i] = rackSize - 1;
                 continue;
@@ -126,28 +126,28 @@ public class Player2 extends AbstractPlayer {
             }
         }
     }
-    
+
     // using HandAnalyzer1 to determine the values to keep or discard.
     protected void handAnalyze() {
         analyzer1.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
         System.arraycopy(analyzer1.getRangeMax(), 0, rangeMax, 0, rackSize + 2);
         System.arraycopy(analyzer1.getGapCount(), 0, gapCount, 0, rackSize);
         System.arraycopy(analyzer1.getDiscard(), 0, discardReplacement, 0, cardSize + 1);
-        System.arraycopy(analyzer1.getGroupHand(), 0, groupHand, 0, rackSize);    
-        
+        System.arraycopy(analyzer1.getGroupHand(), 0, groupHand, 0, rackSize);
+
         offRange = 0;
         for (int i = 0; i < rackSize; i++) {
             if (gapCount[i] != 0) {
                 offRange++;
             }
-        }        
+        }
     }
-    
+
     /**
      * Determine the use of the card by determining whether the current card's value
      * can go between any two cards in the hand that have cards to be replaced between
      * them.
-     * 
+     *
      * @param value the byte of card value to be review
      * @param isDiscardCard the boolean represent the given card from discard pile
      *        or deck pile
@@ -157,39 +157,40 @@ public class Player2 extends AbstractPlayer {
         reviewHand();
         boolean hasReplacement = secondCheck(value, isDiscardCard);
         if (deadlock && !isDiscardCard && !hasReplacement) {
-            return switchCard(value); 
+            return switchCard(value);
         }
         return hasReplacement;
     }
-    
+
     // Determine the use of the card to be replaced.
     protected boolean hasReplacement(byte value, boolean isDiscardCard) {
         int replacement = discardReplacement[value];
-          
+
         if (replacement > -1 && replacement < rackSize) {
             choosePosition = replacement;
             return true;
-        }        
+        }
         if (!isDiscardCard) {
             replacement = drawReplacement[value];
             if (replacement > -1 && replacement < rackSize) {
                 choosePosition = replacement;
                 return true;
             }
-        }          
+        }
         return false;
     }
-  
+
     // Demonstrate the replacement and reivew it, make sure sorted order will not reduce.
     private boolean secondCheck(byte value, boolean isDiscardCard) {
         boolean secondCheck = hasReplacement(value, isDiscardCard);
         if (!secondCheck) {
             return false;
         }
-        
+
         if (isDiscardCard) {
             if (value > 1 && discardReplacement[value - 1] == cardKey + choosePosition) {
-                if (value < cardSize && discardReplacement[value + 1] != cardKey + choosePosition + 1) {
+                if (value < cardSize && discardReplacement[value + 1]
+                        != cardKey + choosePosition + 1) {
                     return false;
                 }
             }
@@ -199,15 +200,15 @@ public class Player2 extends AbstractPlayer {
                 }
             }
         }
-        
-        int currOffRange = offRange;
+
+        final int currOffRange = offRange;
         int replacement = choosePosition;
-        byte currCard = hand[replacement];
+        final byte currCard = hand[replacement];
         byte tempCard = value;
         byte[] backup = new byte[rackSize];
         System.arraycopy(viewable, 0, backup, 0, rackSize);
         replaceCard(tempCard, replacement, false);
-        reviewHand();    
+        reviewHand();
         int newOffRange = offRange;
         replaceCard(currCard, replacement, false);
         viewable = backup;
@@ -217,14 +218,14 @@ public class Player2 extends AbstractPlayer {
         }
         return false;
     }
- 
+
     // Determine the card value can be replace without changing the sorted order
     private boolean switchCard(byte value) {
         if (value < hand[0]) {
             choosePosition = 0;
             return true;
         }
-        for (int i = 1; i < rackSize; i++) { 
+        for (int i = 1; i < rackSize; i++) {
             if (value > hand[i - 1] && value < hand[i]) {
                 choosePosition = i;
                 return true;
@@ -239,7 +240,7 @@ public class Player2 extends AbstractPlayer {
 
     /**
      * Determine the slot of rack to be replace by the given card.
-     * 
+     *
      * @param card the byte of card value to be keep
      * @return integer the slot of rack to be replaced, -1 if ignored
      */
@@ -250,7 +251,7 @@ public class Player2 extends AbstractPlayer {
     /**
      * Search through the player's hand and replace the new card with the
      * selected card. Throw the selected card to the discard pile.
-     * 
+     *
      * @param takeCard the byte of card value to keep
      * @param isDiscardCard the boolean represent the given card from discard pile
      *        or deck pile
@@ -263,10 +264,10 @@ public class Player2 extends AbstractPlayer {
         }
         return replaceCard(takeCard, newPos, isDiscardCard);
     }
-    
+
     /**
      * When deck pile is empty, notify the discard pile has flipped over to deck pile.
-     * Compare the hand of cards with backup record.  If none of changed, activated 
+     * Compare the hand of cards with backup record.  If none of changed, activated
      * trigger to shift the card to prevent deadlock.
      */
     public void discard2deck() {
@@ -277,6 +278,6 @@ public class Player2 extends AbstractPlayer {
                 break;
             }
         }
-        System.arraycopy(hand, 0, backupHand, 0, rackSize);        
+        System.arraycopy(hand, 0, backupHand, 0, rackSize);
     }
 }
