@@ -35,4 +35,4 @@ Change the winning score from setting:
 [PIL]: https://wp.stolaf.edu/it/installing-pil-pillow-cimage-on-windows-and-mac/
 [Qt]: https://www.qt.io
 [PyQt5]: http://pyqt.sourceforge.net/Docs/PyQt5/installation.html
-[RackoGame.zip]: 
+[RackoGame.zip]: https://my.pcloud.com/publink/show?code=XZ8RTNZfWAIlkUpFXYS6uGVmr4azXJ014Pk
