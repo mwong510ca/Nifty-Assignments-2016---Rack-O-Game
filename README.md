@@ -49,6 +49,6 @@ The user may terminate the game at any time.  An option to have a computer playe
 [See rules]: http://www.hasbro.com/common/instruct/Racko(1987).PDF
 [Development history]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/older%20versions
 [py4j]: https://www.py4j.org
-[Screenshots]:
+[Screenshots]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/screenshots
 [Youtube demo]:
-[System requirements and installation]:
+[System requirements and installation]:https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/gui(pyqu5)
