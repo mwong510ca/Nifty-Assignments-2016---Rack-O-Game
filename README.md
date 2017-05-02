@@ -70,3 +70,4 @@ An option to have a computer player (Moderate level only) take over and finish t
 [py4j]: https://www.py4j.org
 [Screenshots]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/screenshots
 [System requirements and installation]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/gui(pyqu5)
+[youtube demo]: https://www.youtube.com/watch?v=IRlMazuIX1c&list=PLRnfrf3rzEFnVm00w-JZ-693lRKXiFRfU
