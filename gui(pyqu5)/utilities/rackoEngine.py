@@ -112,15 +112,14 @@ class Engine(QThread):
     def setDefaultSpeed(self):
         self.speed_deal = 0.1
         self.speed_play = 0.5
-        self.delay_new_round = 10
+        self.delay_new_round = 6
 
     def setFastSpeed(self):
         self.speed_deal = 0.01
-        self.speed_play = 0.1
-        self.delay_new_round = 3
+        self.speed_play = 0.2
+        self.delay_new_round = 4
 
     def setAutoRunSpeed(self):
-        # self.replacementVisible(True)
         self.speed_deal = 0
         self.speed_play = 0.02
         self.delay_new_round = 1
@@ -337,6 +336,7 @@ class Engine(QThread):
         layout_id = self.player_layout[player_id]
         computer = self.player_list[player_id]
         card_value = self.deck_discard[0]
+        time.sleep(self.speed_play)
         picked = computer.determineUse(card_value, True)
         if picked:
             slot = computer.choosePosition(card_value)
