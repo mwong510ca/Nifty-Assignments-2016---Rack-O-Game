@@ -84,7 +84,7 @@ public class HandAnalyzer1 extends AbstractHandAnalyzer {
 
                 if (reviewGroup == -1) {
                     for (int i = 1; i < rackSize - 1; i++) {
-                        if (!scan[i]) {
+                        if (!scan[i] && gapCount[i + 1] > 0) {
                             int target = cardKey + i + 1;
                             for (int j = rangeMax[i] + 1; j <= rangeMax[i + 1]; j++) {
                                 if (discard[j] == target) {
@@ -100,24 +100,6 @@ public class HandAnalyzer1 extends AbstractHandAnalyzer {
                                         continue;
                                     }
 
-                                    if (gapCount[i + 1] == 0) {
-                                        System.err.println("ERROR - recheck ... " + i + " " + j);
-                                        System.out.println("line 106: Analysis1");
-                                        for (int value : hand) {
-                                            System.out.print(value + "\t");
-                                        }
-                                        System.out.println();
-                                        for (int value : orgDiscard) {
-                                            System.out.print(value + " ");
-                                        }
-                                        System.out.println();
-                                        for (int value : discard) {
-                                            System.out.print(value + " ");
-                                        }
-                                        System.out.println();
-                                        break;
-                                        //System.exit(1);
-                                    }
                                     rangeMax[i + 1] = j - 1;
                                     rangeMax[i + 2] = j;
 
@@ -136,7 +118,7 @@ public class HandAnalyzer1 extends AbstractHandAnalyzer {
 
                 if (reviewGroup == -1) {
                     for (int i = rackSize - 2; i > 0; i--) {
-                        if (!scan[i]) {
+                        if (!scan[i] && gapCount[i - 1] > 0) {
                             int target = cardKey + i - 1;
                             for (int j = rangeMax[i] + 1; j <= rangeMax[i + 1]; j++) {
                                 if (discard[j] == target) {
@@ -151,24 +133,6 @@ public class HandAnalyzer1 extends AbstractHandAnalyzer {
 
                                     if (shift < 1) {
                                         continue;
-                                    }
-                                    if (gapCount[i - 1] == 0) {
-                                        System.err.println("ERROR - recheck ..." + i + " " + j);
-                                        System.out.println("line 153: Analysis1");
-                                        for (int value : hand) {
-                                            System.out.print(value + "\t");
-                                        }
-                                        System.out.println();
-                                        for (int value : orgDiscard) {
-                                            System.out.print(value + " ");
-                                        }
-                                        System.out.println();
-                                        for (int value : discard) {
-                                            System.out.print(value + " ");
-                                        }
-                                        System.out.println();
-                                        break;
-                                        //System.exit(1);
                                     }
 
                                     if (i > 1 && gapCount[i - 2] > 0) {

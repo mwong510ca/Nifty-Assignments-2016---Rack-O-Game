@@ -255,12 +255,9 @@ public class Player3 extends Player2v2 {
      * @return boolean the card value to keep or ignored
      */
     public boolean determineUse(byte value, boolean isDiscardCard) {
-        //printAll();
-        //System.out.println(value + " " + isDiscardCard);
         if (almostWin) {
             return prioritySorting(value, isDiscardCard);
         }
-        //System.out.println("Hard : " + isDiscardCard + "\n");
 
         expandRange = false;
         reviewHand();
@@ -500,7 +497,6 @@ public class Player3 extends Player2v2 {
      * When deck pile is empty, notify the discard pile has flipped over to deck pile.
      */
     public void discard2deck() {
-        //System.out.println("flip");
         for (int i = 1; i <= cardSize; i++) {
             if (cardsStatus[i] == 0) {
                 cardsStatus[i] = 32;
