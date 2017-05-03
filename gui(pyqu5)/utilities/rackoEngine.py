@@ -28,8 +28,8 @@ class Engine(QThread):
     actionLock = pyqtSignal(bool)
     humanPlay = pyqtSignal(int)
     autoRoundEnd = pyqtSignal()
-    # Notes: statsEnd not in use. For statistic run only
-    statsEnd = pyqtSignal()
+    autoBreak = pyqtSignal()
+    engineStop = pyqtSignal()
 
     def __init__(self, size, winning_score):
         super(Engine, self).__init__()
@@ -83,7 +83,12 @@ class Engine(QThread):
                 print(player)
             else:
                 print("human")
-        print()
+
+        self.counter_75 = 0
+        self.counter_125 = 0
+        self.counter_175 = 0
+        self.counter_275 = 0
+        self.counter_475 = 0
 
         self.player_list = player_list
         self.player_name = player_name
@@ -120,12 +125,20 @@ class Engine(QThread):
         self.speed_play = 0.02
         self.delay_new_round = 1
 
+    def terminate(self):
+        if not self._isRunning:
+            self.engineStop.emit()
+        self._isRunning = False
+        self.is_active = False
+        self.auto_run = False
+
     def replacementVisible(self, show_replacement):
         self.show_replacement = show_replacement
-        if show_replacement:
-            self.setFastSpeed()
-        else:
-            self.setDefaultSpeed()
+        if not self.auto_run:
+            if show_replacement:
+                self.setFastSpeed()
+            else:
+                self.setDefaultSpeed()
         if self.is_active:
             for player_id in range(self.number_of_players):
                 if player_id == self.active_player:
@@ -152,6 +165,9 @@ class Engine(QThread):
     def setAutoNewRound(self):
         self.action = 4
         time.sleep(0.2)
+
+    def setAutoContinue(self):
+        self.action = 5
 
     def run(self):
         self.actionLock.emit(True)
@@ -187,6 +203,8 @@ class Engine(QThread):
         elif self.action == 4:
             time.sleep(self.delay_new_round)
             self.new_round()
+        elif self.action == 5:
+            self.computer_play(self.active_player)
         self._isRunning = False
 
     def isRunning(self):
@@ -255,6 +273,7 @@ class Engine(QThread):
         for player in self.player_list:
             if player is not None:
                 player.discardAdd(value, self.active_player)
+        self.auto_break_on = False
         if len(self.deck) == 0:
             for player in self.player_list:
                 if player is not None:
@@ -267,6 +286,7 @@ class Engine(QThread):
             self.active_player = -1
             self.addToDiscard(self.dealCard())
             self.active_player = backup_player
+            self.auto_break_on = True
         time.sleep(self.speed_play)
 
     def removeFromDiscard(self):
@@ -460,6 +480,8 @@ class Engine(QThread):
                 self.gameStatus.emit("")
                 self.gameStatus.emit("    *** " + winner + " wins the game with " + str(hi_score) + " points. ***")
                 self.actionLock.emit(False)
+                print(str(self.player_scores) + "\n")
+                self.engineStop.emit()
         else:
             self.inactive_rack(player_id)
             player_id += 1
@@ -468,28 +490,37 @@ class Engine(QThread):
             if player_id == self.starting_player:
                 self.gameStatus.emit("")
             if self.player_list[player_id] is not None:
-                self.computer_play(player_id)
+                if self.auto_run and self.auto_break_on:
+                    self.active_player = player_id
+                    self._isRunning = False
+                    self.autoBreak.emit()
+                else:
+                    self.computer_play(player_id)
             else:
                 self.human_play(player_id)
 
     def new_round(self):
-        for player_id in range(self.number_of_players):
-            if self.player_list[player_id] is not None:
-                self.player_list[player_id].reset()
-                for id2 in range(self.number_of_players):
-                    self.player_list[player_id].setPlayerScore(id2, self.player_scores[id2])
-            layout_id = self.player_layout[player_id]
-            for slot in range(self._rack_size):
-                self.rackSlotColor.emit(layout_id, slot, 3, False)
-                self.rackSlotValue.emit(layout_id, slot, "")
-        self.round_number += 1
-        self.starting_player += 1
-        if self.starting_player == self.number_of_players:
-            self.starting_player = 0
-        self.active_player = -1
-        self.is_active = True
-        self.load_deck()
-        self.deal_hand()
+        if self._isRunning:
+            self.counter_turns = 0
+            for player_id in range(self.number_of_players):
+                if self.player_list[player_id] is not None:
+                    self.player_list[player_id].reset()
+                    for id2 in range(self.number_of_players):
+                        self.player_list[player_id].setPlayerScore(id2, self.player_scores[id2])
+                layout_id = self.player_layout[player_id]
+                for slot in range(self._rack_size):
+                    self.rackSlotColor.emit(layout_id, slot, 3, False)
+                    self.rackSlotValue.emit(layout_id, slot, "")
+            self.round_number += 1
+            self.starting_player += 1
+            if self.starting_player == self.number_of_players:
+                self.starting_player = 0
+            self.active_player = -1
+            self.is_active = True
+            self.load_deck()
+            self.deal_hand()
+        else:
+            self.engineStop.emit()
 
     def score_update(self):
         self.game_end = False
@@ -500,6 +531,16 @@ class Engine(QThread):
                 score = str(self.score_racko(player_id))
                 print_scores += score + " "
                 round_scores = round_scores + self.player_name[player_id] + " - " + score + "  "
+                if score == "75":
+                    self.counter_75 = self.counter_75 + 1
+                elif score == "125":
+                    self.counter_125 = self.counter_125 + 1
+                elif score == "175":
+                    self.counter_175 = self.counter_175 + 1
+                elif score == "275":
+                    self.counter_275 = self.counter_275 + 1
+                elif score == "475":
+                    self.counter_475 = self.counter_475 + 1
             else:
                 score = str(self.score_others(player_id))
                 print_scores += score + " "

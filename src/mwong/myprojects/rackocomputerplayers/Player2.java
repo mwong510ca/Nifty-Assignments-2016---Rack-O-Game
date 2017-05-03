@@ -1,5 +1,6 @@
 package mwong.myprojects.rackocomputerplayers;
 
+import java.util.Random;
 
 /**
  * Player2 extends AbstractPlayer with computer strategy start from even distribution.
@@ -21,6 +22,7 @@ public class Player2 extends AbstractPlayer {
     protected int choosePosition;
     protected AbstractHandAnalyzer analyzer1;
     private byte[] backupHand;
+    private byte[] deadlockReference;
     private boolean deadlock;
 
     /**
@@ -31,6 +33,7 @@ public class Player2 extends AbstractPlayer {
         aveRange = cardSize / rackSize;
         analyzer1 = new HandAnalyzer1(cardSize, rackSize, cardKey);
         backupHand = new byte[rackSize];
+        deadlockReference = new byte[rackSize];
     }
 
     /**
@@ -154,11 +157,14 @@ public class Player2 extends AbstractPlayer {
      * @return boolean the card value to keep or ignored
      */
     public boolean determineUse(byte value, boolean isDiscardCard) {
+        if (deadlock) {
+            if ((new Random()).nextInt(3) == 0) {
+                return false;
+            }
+            return referenceSort(value);
+        }
         reviewHand();
         boolean hasReplacement = secondCheck(value, isDiscardCard);
-        if (deadlock && !isDiscardCard && !hasReplacement) {
-            return switchCard(value);
-        }
         return hasReplacement;
     }
 
@@ -219,23 +225,37 @@ public class Player2 extends AbstractPlayer {
         return false;
     }
 
-    // Determine the card value can be replace without changing the sorted order
-    private boolean switchCard(byte value) {
-        if (value < hand[0]) {
-            choosePosition = 0;
-            return true;
-        }
-        for (int i = 1; i < rackSize; i++) {
-            if (value > hand[i - 1] && value < hand[i]) {
+    private boolean referenceSort(byte value) {
+        for (int i = 0; i < rackSize; i++) {
+            if (value == deadlockReference[i]) {
                 choosePosition = i;
                 return true;
             }
         }
-        if (value > hand[rackSize - 1]) {
-            choosePosition = rackSize - 1;
-            return true;
+
+        for (int i = rackSize - 1; i >= 0; i--) {
+            int refValue = deadlockReference[i];
+            if (hand[i] != refValue) {
+                for (int j = 0; j < rackSize; j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    if (hand[j] == refValue) {
+                        choosePosition = j;
+                        return true;
+                    }
+                }
+            }
         }
-        return false;
+
+        for (int i = 0; i < rackSize; i++) {
+            if (value < deadlockReference[i]) {
+                choosePosition = i;
+                return true;
+            }
+        }
+        choosePosition = rackSize - 1;
+        return true;
     }
 
     /**
@@ -271,11 +291,29 @@ public class Player2 extends AbstractPlayer {
      * trigger to shift the card to prevent deadlock.
      */
     public void discard2deck() {
-        deadlock = true;
+        int count = 0;
         for (int i = 0; i < rackSize; i++) {
-            if (hand[i] != backupHand[i]) {
-                deadlock = false;
-                break;
+            if (hand[i] == backupHand[i]) {
+                count++;
+            }
+        }
+        if (count > rackSize - 2) {
+            deadlock = true;
+        }
+
+        if (deadlock && count > rackSize - 3) {
+            deadlockReference[0] = hand[0];
+            for (int i = 1; i < rackSize; i++) {
+                byte val = hand[i];
+                deadlockReference[i] = val;
+                for (int j = i - 1; j >= 0; j--) {
+                    if (val > deadlockReference[j]) {
+                        break;
+                    } else {
+                        deadlockReference[j + 1] = deadlockReference[j];
+                        deadlockReference[j] = val;
+                    }
+                }
             }
         }
         System.arraycopy(hand, 0, backupHand, 0, rackSize);

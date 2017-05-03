@@ -121,7 +121,7 @@ class GameRacko(QMainWindow, MainWindow):
              self.player4Slot06, self.player4Slot07, self.player4Slot08, self.player4Slot09, self.player4Slot10]]
         self.winning_score = 500
         # initial maps with final values
-        self.replacement_code = 5
+        self.replacement_code = 100
         self.computer_player = {0: self._gateway.entry_point.getPlayerEasy,
                                 1: self._gateway.entry_point.getPlayerModerate,
                                 2: self._gateway.entry_point.getPlayerHard,
@@ -140,8 +140,9 @@ class GameRacko(QMainWindow, MainWindow):
         self._game_engine.actionLock.connect(self.control_in_action)
         self._game_engine.humanPlay.connect(self.human_play)
         self._game_engine.autoRoundEnd.connect(self.auto_round_end)
+        self._game_engine.autoBreak.connect(self.auto_break)
         # Notes: statsEnd not in use. For statistic run only
-        self._game_engine.statsEnd.connect(self.game_terminate)
+        self._game_engine.engineStop.connect(self.game_terminate)
 
         # link card images
         self._cards_files = Cards()
@@ -151,6 +152,7 @@ class GameRacko(QMainWindow, MainWindow):
         self.layout3_lock = True
         self.Deck_pile_lock = True
         self.game_active = False
+        self.auto_run_active = False
         self.players_name = []
         self.players_list = []
         self.players_layout = []
@@ -193,7 +195,10 @@ class GameRacko(QMainWindow, MainWindow):
             self.optionPlayer4.setEnabled(True)
 
     def game_start_stop(self):
-        if self.game_active:
+        if self.auto_run_active:
+            self.actionButton.setEnabled(False)
+            self._game_engine.terminate()
+        elif self.game_active:
             reply = QMessageBox.question(None, '', 'You are requesting to stop the game.\n' +
                                          'Do you want computer take over your turn?\n' +
                                          'Cancel - return to game\n' +
@@ -208,6 +213,7 @@ class GameRacko(QMainWindow, MainWindow):
             self.layout_reset()
             self.game_start()
             self.game_active = True
+            self.auto_run_active = False
             self.headingSetup.setEnabled(False)
             self.requirePlayer2.setEnabled(False)
             self.optionPlayer3.setEnabled(False)
@@ -219,6 +225,7 @@ class GameRacko(QMainWindow, MainWindow):
 
     def game_terminate(self):
         self.game_active = False
+        self.auto_run_active = False
         self.headingSetup.setEnabled(True)
         self.requirePlayer2.setEnabled(True)
         self.optionPlayer3.setEnabled(True)
@@ -227,6 +234,7 @@ class GameRacko(QMainWindow, MainWindow):
         self.actionFullGame.setEnabled(True)
         self.actionCustomLimit.setEnabled(True)
         self.actionButton.setText("New Game")
+        self.actionButton.setEnabled(True)
 
     def setup_players(self):
         while len(self.players_list) > 0:
@@ -343,7 +351,7 @@ class GameRacko(QMainWindow, MainWindow):
             self.headingDeckPile.setText("Deck Pile (empty)")
             self.imgDeckPile.setPixmap(self._cards_files.card_number(0))
         if face_up:
-            self.headingDeckPile.setText("Reviewing top deck card")
+            self.headingDeckPile.setText("Player reviewing top deck card")
             if value in self.range_rack:
                 self.imgDeckPile.setPixmap(self._cards_files.card_number(value))
             else:
@@ -358,7 +366,7 @@ class GameRacko(QMainWindow, MainWindow):
                 else:
                     self.headingDiscardPile.setText("Discard Pile (empty) ERROR : " + str(value))
             else:
-                self.headingDiscardPile.setText("Reviewing top deck card")
+                self.headingDiscardPile.setText("Computer reviewing top deck card")
                 self.imgDiscardPile.setPixmap(self._cards_files.backcard())
         else:
             self.headingDiscardPile.setText("Discard Pile")
@@ -389,7 +397,10 @@ class GameRacko(QMainWindow, MainWindow):
             self._game_engine.replacementVisible(False)
 
     def control_in_action(self, lock):
-        if lock:
+        if self.auto_run_active:
+            self.actionButton.setEnabled(True)
+            self.optionView.setEnabled(True)
+        elif lock:
             self.actionButton.setEnabled(False)
             self.optionView.setEnabled(False)
             self.layout1_lock = lock
@@ -459,12 +470,19 @@ class GameRacko(QMainWindow, MainWindow):
                         self._game_engine.setHumanReplacement(False, computer_replacement2)
 
         if change_speed:
+            self.auto_run_active = True
             self._game_engine.setAutoRunSpeed()
+            self.actionButton.setText("Stop Auto Run")
         self._game_engine.start()
 
     def auto_round_end(self):
         if self.game_active:
             self._game_engine.setAutoNewRound()
+            self._game_engine.start()
+
+    def auto_break(self):
+        if self.game_active:
+            self._game_engine.setAutoContinue()
             self._game_engine.start()
 
     def about_racko(self):

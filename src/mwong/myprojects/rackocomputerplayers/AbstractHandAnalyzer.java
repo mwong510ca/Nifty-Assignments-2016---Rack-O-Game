@@ -11,6 +11,7 @@ public abstract class AbstractHandAnalyzer {
     int[] groupHand;
     int[] gapCount;
     int[] discard;
+    int[] orgDiscard;
     int[] rangeMax;
     int rating;
     int cardSize;
@@ -24,6 +25,7 @@ public abstract class AbstractHandAnalyzer {
         rangeMax = new int[rackSize + 2];
         gapCount = new int[rackSize];
         discard = new int[cardSize + 1];
+        orgDiscard = new int[cardSize + 1];
         groupHand = new int[rackSize];
     }
 
@@ -36,6 +38,7 @@ public abstract class AbstractHandAnalyzer {
         System.arraycopy(gapCount, 0, this.gapCount, 0, rackSize);
         System.arraycopy(discardReplacement, 0, this.discard, 0, cardSize + 1);
         System.arraycopy(groupHand, 0, this.groupHand, 0, rackSize);
+        System.arraycopy(discard, 0, discardReplacement, 0, discardReplacement.length);
         analysis(hand);
 
         rating = 10;
