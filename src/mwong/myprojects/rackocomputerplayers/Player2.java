@@ -1,6 +1,5 @@
 package mwong.myprojects.rackocomputerplayers;
 
-import java.util.Random;
 
 /**
  * Player2 extends AbstractPlayer with computer strategy start from even distribution.
@@ -158,9 +157,6 @@ public class Player2 extends AbstractPlayer {
      */
     public boolean determineUse(byte value, boolean isDiscardCard) {
         if (deadlock) {
-            if ((new Random()).nextInt(3) == 0) {
-                return false;
-            }
             return referenceSort(value);
         }
         reviewHand();
@@ -233,13 +229,10 @@ public class Player2 extends AbstractPlayer {
             }
         }
 
-        for (int i = rackSize - 1; i >= 0; i--) {
+        for (int i = 0; i < rackSize; i++) {
             int refValue = deadlockReference[i];
             if (hand[i] != refValue) {
                 for (int j = 0; j < rackSize; j++) {
-                    if (i == j) {
-                        continue;
-                    }
                     if (hand[j] == refValue) {
                         choosePosition = j;
                         return true;
