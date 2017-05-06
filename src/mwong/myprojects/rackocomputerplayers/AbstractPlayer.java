@@ -62,7 +62,6 @@ abstract class AbstractPlayer implements Player {
         for (int i = 0; i < hand.length; i++) {
             this.hand[i] = hand[i];
         }
-        printAll();
     }
 
     /**
