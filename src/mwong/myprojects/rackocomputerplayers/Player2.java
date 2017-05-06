@@ -324,7 +324,6 @@ public class Player2 extends AbstractPlayer {
         }
         if (count > rackSize - 2 && ! deadlock) {
             deadlock = true;
-            System.out.println("deadlock");
         }
 
         if (deadlock && count > rackSize - 3) {
