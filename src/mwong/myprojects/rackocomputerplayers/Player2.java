@@ -26,6 +26,7 @@ public class Player2 extends AbstractPlayer {
     private byte[] deadlockReference;
     private boolean deadlock;
     private boolean[] possibleHand;
+    private boolean analyzerFlag;
 
     /**
      * Initializes Player2 object.
@@ -34,7 +35,7 @@ public class Player2 extends AbstractPlayer {
         super(size);
         aveRange = cardSize / rackSize;
         analyzer1 = new HandAnalyzer1(cardSize, rackSize, cardKey);
-        analyzer2 = new HandAnalyzer1(cardSize, rackSize, cardKey);
+        analyzer2 = new HandAnalyzer2(cardSize, rackSize, cardKey);
         backupHand = new byte[rackSize];
         deadlockReference = new byte[rackSize];
         rangeMax = new int[rackSize + 2];
@@ -43,6 +44,7 @@ public class Player2 extends AbstractPlayer {
         drawReplacement = new int[cardSize + 1];
         groupHand = new int[rackSize];
         possibleHand = new boolean[cardSize + 1];
+        analyzerFlag = true;
     }
 
     /**
@@ -63,22 +65,15 @@ public class Player2 extends AbstractPlayer {
         super.setHand(hand);
         System.arraycopy(hand, 0, backupHand, 0, rackSize);
         deadlock = false;
-        evenDistribution();
-
-        analyzer1.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
-        analyzer2.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
-
-        if (analyzer1.getRating() > analyzer2.getRating()) {
+        if (analyzerFlag) {
             inUseAnalyzer = analyzer1;
         } else {
             inUseAnalyzer = analyzer2;
         }
+        analyzerFlag = !analyzerFlag;
     }
 
-    private void evenDistribution() {
-        for (int i = 0; i < possibleHand.length; i++) {
-            possibleHand[i] = false;
-        }
+    protected void clear() {
         for (int i = 0; i < rangeMax.length; i++) {
             rangeMax[i] = 0;
         }
@@ -88,17 +83,24 @@ public class Player2 extends AbstractPlayer {
         for (int i = 1; i <= cardSize; i++) {
             possibleHand[i] = true;
         }
-        int countMax = aveRange - 1;
-        for (int i = 0; i < rackSize; i++) {
-            possibleHand[hand[i]] = false;
-            gapCount[i] = countMax;
-        }
-
         for (int i = 0; i < discardReplacement.length; i++) {
             discardReplacement[i] = 0;
         }
         for (int i = 0; i < drawReplacement.length; i++) {
             drawReplacement[i] = 0;
+        }
+    }
+
+    // review the hand of cards and determine the values to keep or discard.
+    protected void reviewHand() {
+        clear();
+        for (int i = 0; i < possibleHand.length; i++) {
+            possibleHand[i] = false;
+        }
+        int countMax = aveRange - 1;
+        for (int i = 0; i < rackSize; i++) {
+            possibleHand[hand[i]] = false;
+            gapCount[i] = countMax;
         }
 
         int pos = 0;
@@ -138,11 +140,6 @@ public class Player2 extends AbstractPlayer {
             }
         }
         updateGroupHand();
-    }
-
-    // review the hand of cards and determine the values to keep or discard.
-    protected void reviewHand() {
-        evenDistribution();
         handAnalyze();
     }
 

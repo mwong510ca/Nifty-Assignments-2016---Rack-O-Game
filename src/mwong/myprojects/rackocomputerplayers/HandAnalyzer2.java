@@ -29,14 +29,11 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
      * 3. If the card fall in previous assigned range, change the range and even out.
      */
     void analysis(byte[] hand) {
-
         int loopCount = 0;
-
         while (true) {
             if (loopCount++ == rackSize) {
                 break;
             }
-            System.out.println("analysis 2" + loopCount);
 
             boolean[] scan = new boolean[rackSize];
             for (int i = 0; i < rackSize; i++) {
@@ -47,7 +44,6 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
 
             int reviewGroup = -1;
             while (true) {
-            	System.out.println("loop 2A");
                 reviewGroup = -1;
                 for (int i = 0; i < rackSize; i++) {
                     int group = groupHand[i];

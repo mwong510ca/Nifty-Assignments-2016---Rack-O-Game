@@ -159,6 +159,10 @@ class Engine(QThread):
         self.action = 3
         computer_player.reset()
         computer_player.setHand(bytearray(self.player_hand[player_id]))
+        pile_count = len(self.deck_discard)
+        while pile_count > 0:
+            pile_count -= 1
+            computer_player.discardAdd(self.deck_discard[pile_count], -1)
         self.player_list.pop(player_id)
         self.player_list.insert(player_id, computer_player)
 

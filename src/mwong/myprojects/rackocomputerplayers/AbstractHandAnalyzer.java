@@ -36,10 +36,9 @@ public abstract class AbstractHandAnalyzer {
         System.arraycopy(discard, 0, discardReplacement, 0, discardReplacement.length);
         analysis(hand);
 
-        rating = 10;
+        rating = 0;
         for (int i = 0; i < rackSize; i++) {
-            int val = this.gapCount[i];
-            if (val == 0) {
+            if (this.gapCount[i] == 0) {
                 rating++;
             }
         }

@@ -149,8 +149,7 @@ public class Player3 extends Player2 {
 
     // review the hand of cards and determine the values to keep or discard.
     protected void reviewHand() {
-        rangeMax = new int[rackSize + 2];
-        gapCount = new int[rackSize];
+        super.clear();
         int possibleCount = 0;
 
         for (int i = 1; i <= cardSize; i++) {
@@ -171,9 +170,6 @@ public class Player3 extends Player2 {
             }
         }
 
-        discardReplacement = new int[cardSize + 1];
-        drawReplacement = new int[cardSize + 1];
-
         int pos = 0;
         int count = 0;
         for (int i = 1; i <= cardSize; i++) {
@@ -192,7 +188,6 @@ public class Player3 extends Player2 {
         rangeMax[rackSize] = cardSize;
         rangeMax[rackSize + 1] = cardSize;
 
-        groupHand = new int[rackSize];
         for (int i = 0; i < rackSize; i++) {
             discardReplacement[value[i]] = cardKey + i;
         }

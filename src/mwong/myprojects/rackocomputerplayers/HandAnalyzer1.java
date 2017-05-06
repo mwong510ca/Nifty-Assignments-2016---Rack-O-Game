@@ -30,7 +30,6 @@ public class HandAnalyzer1 extends AbstractHandAnalyzer {
      */
     void analysis(byte[] hand) {
         int loopCount = 0;
-
         while (true) {
             if (loopCount++ == rackSize) {
                 break;
