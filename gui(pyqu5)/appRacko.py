@@ -140,6 +140,7 @@ class GameRacko(QMainWindow, MainWindow):
         self._game_engine.actionLock.connect(self.control_in_action)
         self._game_engine.humanPlay.connect(self.human_play)
         self._game_engine.autoRoundEnd.connect(self.auto_round_end)
+        self._game_engine.autoBreak.connect(self.auto_break)
         self._game_engine.engineStop.connect(self.game_terminate)
 
         # link card images
@@ -476,6 +477,11 @@ class GameRacko(QMainWindow, MainWindow):
     def auto_round_end(self):
         if self.game_active:
             self._game_engine.setAutoNewRound()
+            self._game_engine.start()
+
+    def auto_break(self):
+        if self.game_active:
+            self._game_engine.setAutoContinue()
             self._game_engine.start()
 
     def about_racko(self):

@@ -39,6 +39,9 @@ public class GatewayServerRackoComputerPlayers {
         rackoSize = cardSize;
         numberOfPlayers = total;
         replacementID = total;
+        for (int i = 0; i < maxPlayers; i++) {
+        	players[i] = null;
+        }
     }
 
     /**
@@ -93,8 +96,20 @@ public class GatewayServerRackoComputerPlayers {
             throw new ArrayIndexOutOfBoundsException();
         }
         int id = replacementID++;
-        players[id - 1] = new Player2(rackoSize);
-        return players[id - 1];
+        
+        for (int i = 0; i < id; i++) {
+        	if (players[i].getClass() == Player2.class) {
+        		continue;
+        	} else {
+        		players[id] = new Player2(rackoSize);
+        		break;
+        	}
+        }
+        
+        if (players[id] == null) {
+        	players[id] = new Player1(rackoSize);
+        }
+        return players[id];
     }
 
     /**
