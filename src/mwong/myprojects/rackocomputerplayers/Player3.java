@@ -11,13 +11,13 @@ package mwong.myprojects.rackocomputerplayers;
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
  */
-public class Player3 extends Player2v2 {
+public class Player3 extends Player2 {
     private int[] discardPile;
     private int[] deckPile;
     private int discardCount;
     private int deckIdx;
     private byte[] cardsStatus;
-    private boolean aggressivePlayer;
+    protected boolean aggressivePlayer;
     private boolean predictNextCard;
     private boolean expandRange;
     private boolean almostWin;
@@ -36,7 +36,14 @@ public class Player3 extends Player2v2 {
         optimizer = new RangeOptimizer(cardSize, rackSize, cardKey, aveRange);
         numPlayer = 2 + (cardSize - 40) / 10;
         idShift = 0;
-        reset();
+        deckPile = new int[20];
+        discardPile = new int[20];
+        deckIdx = -1;
+        discardCount = 0;
+        predictNextCard = false;
+        cardsStatus = new byte[cardSize + 1];
+        otherScores = new int[numPlayer - 1];
+        aggressivePlayer = true;
     }
 
     /**
@@ -96,29 +103,20 @@ public class Player3 extends Player2v2 {
             }
         }
 
-        aggressivePlayer = false;
+        aggressivePlayer = !aggressivePlayer;
         almostWin = false;
-
-        if (myScore + 45 >= winScore) {
-            if (otherScore2win + 75 < winScore) {
-                almostWin = true;
-            }
+        if (myScore + 45 >= winScore && otherScore2win + 75 < winScore) {
+            almostWin = true;
         } else if (myScore + 75 >= winScore) {
             if (otherScore2win + 150 < myScore) {
                 almostWin = true;
-            } else if (otherScore2win + 25 > winScore + 75) {
-                aggressivePlayer = true;
+            } else if (otherScore2win + 25 < winScore + 75) {
+                aggressivePlayer = false;
             }
-        } else if (otherScore2win  + 30 >= winScore) {
+        } else if (otherScore2win + 25 >= winScore) {
             if (myScore + 75 < winScore) {
                 aggressivePlayer = true;
             }
-        } else if (otherScore2win  + 75 >= winScore) {
-            if (myScore + 150 < winScore) {
-                aggressivePlayer = true;
-            }
-        } else if (myScore - otherScore2win > 200) {
-            aggressivePlayer = true;
         }
 
         // 0 - unknown/drawPile, 1 - discardPile, 2 - self; 4 - player 1, 8 - player 2,
@@ -132,13 +130,21 @@ public class Player3 extends Player2v2 {
      * Clear and reset the initial setting.
      */
     public void reset() {
-        deckPile = new int[20];
-        discardPile = new int[20];
+        for (int i = 0; i < deckPile.length; i++) {
+            deckPile[i] = 0;
+        }
+        for (int i = 0; i < discardPile.length; i++) {
+            discardPile[i] = 0;
+        }
         deckIdx = -1;
         discardCount = 0;
         predictNextCard = false;
-        cardsStatus = new byte[cardSize + 1];
-        otherScores = new int[numPlayer - 1];
+        for (int i = 0; i < cardsStatus.length; i++) {
+            cardsStatus[i] = 0;
+        }
+        for (int i = 0; i < otherScores.length; i++) {
+            otherScores[i] = 0;
+        }
     }
 
     // review the hand of cards and determine the values to keep or discard.
@@ -255,6 +261,7 @@ public class Player3 extends Player2v2 {
      * @return boolean the card value to keep or ignored
      */
     public boolean determineUse(byte value, boolean isDiscardCard) {
+        choosePosition = -1;
         if (almostWin) {
             return prioritySorting(value, isDiscardCard);
         }
@@ -278,39 +285,39 @@ public class Player3 extends Player2v2 {
             }
         }
 
-        boolean result = secondCheck(value, isDiscardCard);
+        secondCheck(value, isDiscardCard);
         if (isDiscardCard) {
             cardsStatus[value] = 1;
         } else {
             cardsStatus[value] = 0;
         }
-        return result;
+        return (choosePosition >= 0 && choosePosition < rackSize);
     }
 
-    private boolean secondCheck(byte value, boolean isDiscardCard) {
+    private void secondCheck(byte value, boolean isDiscardCard) {
         boolean secondCheck = hasReplacement(value, isDiscardCard);
         if (!secondCheck) {
             if (value <= aveRange) {
                 if (gapCount[0] == 0 && value < hand[0] && hand[0] > aveRange) {
                     if (gapCount[1] > 0) {
                         choosePosition = 0;
-                        return true;
+                        return;
                     }
                 }
             }
-            return false;
+            return;
         }
 
         if (isDiscardCard) {
             if (value > 1 && discardReplacement[value - 1] == cardKey + choosePosition) {
                 if (value < cardSize && discardReplacement[value + 1]
                         != cardKey + choosePosition + 1) {
-                    return false;
+                    return;
                 }
             }
             if (value < cardSize && discardReplacement[value + 1] == cardKey + choosePosition) {
                 if (value > 1 && discardReplacement[value - 1] != cardKey + choosePosition - 1) {
-                    return false;
+                    return;
                 }
             }
         }
@@ -327,13 +334,13 @@ public class Player3 extends Player2v2 {
         final int newOffRange = offRange;
         replaceCard(currCard, replacement, false);
         cardsStatus[tempCard] = 0;
-        viewable = backup;
+        System.arraycopy(backup, 0, viewable, 0, rackSize);
         reviewHand();
 
         if (newOffRange <= currOffRange) {
             if (newOffRange == 0 || !isDiscardCard || !predictNextCard) {
                 choosePosition = replacement;
-                return true;
+                return;
             }
 
             byte nextValue = (byte) deckPile[deckIdx];
@@ -341,7 +348,7 @@ public class Player3 extends Player2v2 {
             optimizeRange(expandRange);
             if (!nextCheck) {
                 choosePosition = replacement;
-                return true;
+                return;
             }
 
             int replacement2 = choosePosition;
@@ -355,17 +362,15 @@ public class Player3 extends Player2v2 {
             final int newOffRange2 = offRange;
             replaceCard(currCard2, replacement2, false);
             cardsStatus[tempCard2] = 0;
-            viewable = backup2;
+            System.arraycopy(backup2, 0, viewable, 0, rackSize);
             reviewHand();
             if (newOffRange2 < newOffRange) {
-                return false;
+                choosePosition = -1;
             } else {
                 optimizeRange(expandRange);
                 choosePosition = replacement;
-                return true;
             }
         }
-        return false;
     }
 
     // if approach to win, fill the minimum slots to reach the winning score

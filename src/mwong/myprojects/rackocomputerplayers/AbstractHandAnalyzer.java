@@ -22,11 +22,6 @@ public abstract class AbstractHandAnalyzer {
         this.cardSize = cardSize;
         this.rackSize = rackSize;
         this.cardKey = cardKey;
-        rangeMax = new int[rackSize + 2];
-        gapCount = new int[rackSize];
-        discard = new int[cardSize + 1];
-        orgDiscard = new int[cardSize + 1];
-        groupHand = new int[rackSize];
     }
 
     /**
@@ -58,7 +53,7 @@ public abstract class AbstractHandAnalyzer {
      * @return integer array of group hand of each card
      */
     public int[] getGroupHand() {
-        return groupHand;
+        return groupHand.clone();
     }
 
     /**
@@ -67,7 +62,7 @@ public abstract class AbstractHandAnalyzer {
      * @return integer array of gap count of each slot
      */
     public int[] getGapCount() {
-        return gapCount;
+        return gapCount.clone();
     }
 
     /**
@@ -76,7 +71,7 @@ public abstract class AbstractHandAnalyzer {
      * @return integer array of replacement assignment of discard card
      */
     public int[] getDiscard() {
-        return discard;
+        return discard.clone();
     }
 
     /**
@@ -85,7 +80,7 @@ public abstract class AbstractHandAnalyzer {
      * @return integer array of range maximum of each slot
      */
     public int[] getRangeMax() {
-        return rangeMax;
+        return rangeMax.clone();
     }
 
     /**

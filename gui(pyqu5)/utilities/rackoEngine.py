@@ -28,7 +28,6 @@ class Engine(QThread):
     actionLock = pyqtSignal(bool)
     humanPlay = pyqtSignal(int)
     autoRoundEnd = pyqtSignal()
-    autoBreak = pyqtSignal()
     engineStop = pyqtSignal()
 
     def __init__(self, size, winning_score):
@@ -77,12 +76,14 @@ class Engine(QThread):
         self.gameStatus.emit(str(self.number_of_players) + " players Rack-o!  Use card 1 - "
                              + str(card_size) + ".")
 
-        for player in player_list:
-            if player is not None:
-                player.setWinningScore(self._winning_score)
-                print(player)
+        player_str = "\nGui position from left: User"
+        for idx in range(1, self.number_of_players):
+            if player_list[idx] is not None:
+                player_list[idx].setWinningScore(self._winning_score)
+                player_str = player_str + " -> " + str(player_list[idx])
             else:
-                print("human")
+                player_str = player_str + " -> User2"
+        print(player_str)
 
         self.counter_75 = 0
         self.counter_125 = 0
@@ -165,9 +166,6 @@ class Engine(QThread):
         self.action = 4
         time.sleep(0.2)
 
-    def setAutoContinue(self):
-        self.action = 5
-
     def run(self):
         self.actionLock.emit(True)
         self._isRunning = True
@@ -188,8 +186,6 @@ class Engine(QThread):
                     self.auto_run = False
             if self.human_Deck_card > -1:
                 replacement_player = self.player_list[self.active_player]
-                print(replacement_player)
-                print(str(self.human_Deck_card))
                 replacement_player.determineUse(self.human_Deck_card, True)
                 picked = replacement_player.determineUse(self.human_Deck_card, False)
                 if picked:
@@ -202,8 +198,6 @@ class Engine(QThread):
         elif self.action == 4:
             time.sleep(self.delay_new_round)
             self.new_round()
-        elif self.action == 5:
-            self.computer_play(self.active_player)
         self._isRunning = False
 
     def isRunning(self):
@@ -272,7 +266,6 @@ class Engine(QThread):
         for player in self.player_list:
             if player is not None:
                 player.discardAdd(value, self.active_player)
-        self.auto_break_on = False
         if len(self.deck) == 0:
             for player in self.player_list:
                 if player is not None:
@@ -285,7 +278,6 @@ class Engine(QThread):
             self.active_player = -1
             self.addToDiscard(self.dealCard())
             self.active_player = backup_player
-            self.auto_break_on = True
         time.sleep(self.speed_play)
 
     def removeFromDiscard(self):
@@ -453,6 +445,7 @@ class Engine(QThread):
                 round_end = False
                 break
         if round_end:
+            print()
             for hand in self.player_hand:
                 string = ""
                 for card in hand:
@@ -480,7 +473,7 @@ class Engine(QThread):
                 self.gameStatus.emit("")
                 self.gameStatus.emit("    *** " + winner + " wins the game with " + str(hi_score) + " points. ***")
                 self.actionLock.emit(False)
-                print(str(self.player_scores) + "\n")
+                print(str(self.player_scores))
                 self.engineStop.emit()
         else:
             self.inactive_rack(player_id)
@@ -490,12 +483,7 @@ class Engine(QThread):
             if player_id == self.starting_player:
                 self.gameStatus.emit("")
             if self.player_list[player_id] is not None:
-                if self.auto_run and self.auto_break_on:
-                    self.active_player = player_id
-                    self._isRunning = False
-                    self.autoBreak.emit()
-                else:
-                    self.computer_play(player_id)
+                self.computer_play(player_id)
             else:
                 self.human_play(player_id)
 
@@ -549,7 +537,7 @@ class Engine(QThread):
                 layout_id = self.player_layout[player_id]
                 for slot in range(self._rack_size):
                     self.rackSlotValue.emit(layout_id, slot, str(self.player_hand[player_id][slot]))
-        print("Round " + str(self.round_number) + " : " + print_scores + "\n")
+        print("Round " + str(self.round_number) + " : " + print_scores)
 
         self.gameStatus.emit("")
         self.gameStatus.emit(round_scores)

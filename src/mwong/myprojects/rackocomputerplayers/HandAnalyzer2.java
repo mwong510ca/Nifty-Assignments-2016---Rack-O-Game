@@ -15,6 +15,11 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
      */
     public HandAnalyzer2(int cardSize, int rackSize, int cardKey) {
         super(cardSize, rackSize, cardKey);
+        rangeMax = new int[rackSize + 2];
+        gapCount = new int[rackSize];
+        discard = new int[cardSize + 1];
+        orgDiscard = new int[cardSize + 1];
+        groupHand = new int[rackSize];
     }
 
     /**
@@ -29,8 +34,9 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
 
         while (true) {
             if (loopCount++ == rackSize) {
-                System.exit(0);
+                break;
             }
+            System.out.println("analysis 2" + loopCount);
 
             boolean[] scan = new boolean[rackSize];
             for (int i = 0; i < rackSize; i++) {
@@ -41,7 +47,7 @@ public class HandAnalyzer2 extends AbstractHandAnalyzer {
 
             int reviewGroup = -1;
             while (true) {
-
+            	System.out.println("loop 2A");
                 reviewGroup = -1;
                 for (int i = 0; i < rackSize; i++) {
                     int group = groupHand[i];

@@ -67,7 +67,7 @@ class GameRacko(QMainWindow, MainWindow):
         self.requirePlayer2.setItemText(0, "Easy")
         self.requirePlayer2.setItemText(1, "Moderate")
         self.requirePlayer2.setItemText(2, "Hard")
-        self.requirePlayer2.setCurrentIndex(0)
+        self.requirePlayer2.setCurrentIndex(1)
         self.optionPlayer3.setItemText(0, "Easy")
         self.optionPlayer3.setItemText(1, "Moderate")
         self.optionPlayer3.setItemText(2, "Hard")
@@ -140,8 +140,6 @@ class GameRacko(QMainWindow, MainWindow):
         self._game_engine.actionLock.connect(self.control_in_action)
         self._game_engine.humanPlay.connect(self.human_play)
         self._game_engine.autoRoundEnd.connect(self.auto_round_end)
-        self._game_engine.autoBreak.connect(self.auto_break)
-        # Notes: statsEnd not in use. For statistic run only
         self._game_engine.engineStop.connect(self.game_terminate)
 
         # link card images
@@ -478,11 +476,6 @@ class GameRacko(QMainWindow, MainWindow):
     def auto_round_end(self):
         if self.game_active:
             self._game_engine.setAutoNewRound()
-            self._game_engine.start()
-
-    def auto_break(self):
-        if self.game_active:
-            self._game_engine.setAutoContinue()
             self._game_engine.start()
 
     def about_racko(self):

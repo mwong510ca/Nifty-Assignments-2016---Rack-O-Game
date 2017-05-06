@@ -2,8 +2,6 @@ package mwong.myprojects.rackocomputerplayers;
 
 import py4j.GatewayServer;
 
-import java.util.Random;
-
 
 /**
  * GatewayServerRankoComputerPlayers for pyqt5 GUI front end to connect to
@@ -31,7 +29,7 @@ public class GatewayServerRackoComputerPlayers {
     /**
      * Set the number of players and card size for the Racko game.
      *
-     * @param total the intrger of total number of players
+     * @param total the integer of total number of players
      * @param cardSize the integer of the card size
      */
     public void setNumberOfPlayers(int total, int cardSize) {
@@ -67,12 +65,7 @@ public class GatewayServerRackoComputerPlayers {
         if (id < minPlayers || id > numberOfPlayers) {
             throw new IllegalArgumentException();
         }
-        int rand = (new Random()).nextInt(2);
-        if (rand == 0) {
-            players[id - 1] = new Player2(rackoSize);
-        } else {
-            players[id - 1] = new Player2v2(rackoSize);
-        }
+        players[id - 1] = new Player2(rackoSize);
         return players[id - 1];
     }
 
@@ -100,12 +93,7 @@ public class GatewayServerRackoComputerPlayers {
             throw new ArrayIndexOutOfBoundsException();
         }
         int id = replacementID++;
-        int rand = (new Random()).nextInt(2);
-        if (rand == 0) {
-            players[id - 1] = new Player2(rackoSize);
-        } else {
-            players[id - 1] = new Player2v2(rackoSize);
-        }
+        players[id - 1] = new Player2(rackoSize);
         return players[id - 1];
     }
 

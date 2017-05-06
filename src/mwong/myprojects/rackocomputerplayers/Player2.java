@@ -19,10 +19,13 @@ public class Player2 extends AbstractPlayer {
     protected int aveRange;
     protected int offRange;
     protected int choosePosition;
-    protected AbstractHandAnalyzer analyzer1;
+    protected final AbstractHandAnalyzer analyzer1;
+    protected final AbstractHandAnalyzer analyzer2;
+    private AbstractHandAnalyzer inUseAnalyzer;
     private byte[] backupHand;
     private byte[] deadlockReference;
     private boolean deadlock;
+    private boolean[] possibleHand;
 
     /**
      * Initializes Player2 object.
@@ -31,8 +34,15 @@ public class Player2 extends AbstractPlayer {
         super(size);
         aveRange = cardSize / rackSize;
         analyzer1 = new HandAnalyzer1(cardSize, rackSize, cardKey);
+        analyzer2 = new HandAnalyzer1(cardSize, rackSize, cardKey);
         backupHand = new byte[rackSize];
         deadlockReference = new byte[rackSize];
+        rangeMax = new int[rackSize + 2];
+        gapCount = new int[rackSize];
+        discardReplacement = new int[cardSize + 1];
+        drawReplacement = new int[cardSize + 1];
+        groupHand = new int[rackSize];
+        possibleHand = new boolean[cardSize + 1];
     }
 
     /**
@@ -53,13 +63,28 @@ public class Player2 extends AbstractPlayer {
         super.setHand(hand);
         System.arraycopy(hand, 0, backupHand, 0, rackSize);
         deadlock = false;
+        evenDistribution();
+
+        analyzer1.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
+        analyzer2.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
+
+        if (analyzer1.getRating() > analyzer2.getRating()) {
+            inUseAnalyzer = analyzer1;
+        } else {
+            inUseAnalyzer = analyzer2;
+        }
     }
 
-    // review the hand of cards and determine the values to keep or discard.
-    protected void reviewHand() {
-        boolean[] possibleHand = new boolean[cardSize + 1];
-        rangeMax = new int[rackSize + 2];
-        gapCount = new int[rackSize];
+    private void evenDistribution() {
+        for (int i = 0; i < possibleHand.length; i++) {
+            possibleHand[i] = false;
+        }
+        for (int i = 0; i < rangeMax.length; i++) {
+            rangeMax[i] = 0;
+        }
+        for (int i = 0; i < gapCount.length; i++) {
+            gapCount[i] = 0;
+        }
         for (int i = 1; i <= cardSize; i++) {
             possibleHand[i] = true;
         }
@@ -69,8 +94,12 @@ public class Player2 extends AbstractPlayer {
             gapCount[i] = countMax;
         }
 
-        discardReplacement = new int[cardSize + 1];
-        drawReplacement = new int[cardSize + 1];
+        for (int i = 0; i < discardReplacement.length; i++) {
+            discardReplacement[i] = 0;
+        }
+        for (int i = 0; i < drawReplacement.length; i++) {
+            drawReplacement[i] = 0;
+        }
 
         int pos = 0;
         int count = 0;
@@ -91,7 +120,9 @@ public class Player2 extends AbstractPlayer {
         rangeMax[rackSize] = cardSize;
         rangeMax[rackSize + 1] = cardSize;
 
-        groupHand = new int[rackSize];
+        for (int i = 0; i < groupHand.length; i++) {
+            groupHand[i] = 0;
+        }
         for (int i = 0; i < rackSize; i++) {
             discardReplacement[hand[i]] = cardKey + i;
         }
@@ -106,8 +137,12 @@ public class Player2 extends AbstractPlayer {
                 }
             }
         }
-
         updateGroupHand();
+    }
+
+    // review the hand of cards and determine the values to keep or discard.
+    protected void reviewHand() {
+        evenDistribution();
         handAnalyze();
     }
 
@@ -131,11 +166,11 @@ public class Player2 extends AbstractPlayer {
 
     // using HandAnalyzer1 to determine the values to keep or discard.
     protected void handAnalyze() {
-        analyzer1.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
-        System.arraycopy(analyzer1.getRangeMax(), 0, rangeMax, 0, rackSize + 2);
-        System.arraycopy(analyzer1.getGapCount(), 0, gapCount, 0, rackSize);
-        System.arraycopy(analyzer1.getDiscard(), 0, discardReplacement, 0, cardSize + 1);
-        System.arraycopy(analyzer1.getGroupHand(), 0, groupHand, 0, rackSize);
+        inUseAnalyzer.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
+        System.arraycopy(inUseAnalyzer.getRangeMax(), 0, rangeMax, 0, rackSize + 2);
+        System.arraycopy(inUseAnalyzer.getGapCount(), 0, gapCount, 0, rackSize);
+        System.arraycopy(inUseAnalyzer.getDiscard(), 0, discardReplacement, 0, cardSize + 1);
+        System.arraycopy(inUseAnalyzer.getGroupHand(), 0, groupHand, 0, rackSize);
 
         offRange = 0;
         for (int i = 0; i < rackSize; i++) {
@@ -156,12 +191,13 @@ public class Player2 extends AbstractPlayer {
      * @return boolean the card value to keep or ignored
      */
     public boolean determineUse(byte value, boolean isDiscardCard) {
+        choosePosition = -1;
         if (deadlock) {
             return referenceSort(value);
         }
         reviewHand();
-        boolean hasReplacement = secondCheck(value, isDiscardCard);
-        return hasReplacement;
+        secondCheck(value, isDiscardCard);
+        return (choosePosition >= 0 && choosePosition < rackSize);
     }
 
     // Determine the use of the card to be replaced.
@@ -183,22 +219,22 @@ public class Player2 extends AbstractPlayer {
     }
 
     // Demonstrate the replacement and reivew it, make sure sorted order will not reduce.
-    private boolean secondCheck(byte value, boolean isDiscardCard) {
+    private void secondCheck(byte value, boolean isDiscardCard) {
         boolean secondCheck = hasReplacement(value, isDiscardCard);
         if (!secondCheck) {
-            return false;
+            return;
         }
 
         if (isDiscardCard) {
             if (value > 1 && discardReplacement[value - 1] == cardKey + choosePosition) {
                 if (value < cardSize && discardReplacement[value + 1]
                         != cardKey + choosePosition + 1) {
-                    return false;
+                    return;
                 }
             }
             if (value < cardSize && discardReplacement[value + 1] == cardKey + choosePosition) {
                 if (value > 1 && discardReplacement[value - 1] != cardKey + choosePosition - 1) {
-                    return false;
+                    return;
                 }
             }
         }
@@ -213,12 +249,11 @@ public class Player2 extends AbstractPlayer {
         reviewHand();
         int newOffRange = offRange;
         replaceCard(currCard, replacement, false);
-        viewable = backup;
+        System.arraycopy(backup, 0, viewable, 0, rackSize);
 
         if (newOffRange <= currOffRange) {
-            return true;
+            return;
         }
-        return false;
     }
 
     private boolean referenceSort(byte value) {
@@ -290,8 +325,9 @@ public class Player2 extends AbstractPlayer {
                 count++;
             }
         }
-        if (count > rackSize - 2) {
+        if (count > rackSize - 2 && ! deadlock) {
             deadlock = true;
+            System.out.println("deadlock");
         }
 
         if (deadlock && count > rackSize - 3) {
@@ -310,5 +346,15 @@ public class Player2 extends AbstractPlayer {
             }
         }
         System.arraycopy(hand, 0, backupHand, 0, rackSize);
+    }
+
+    protected void printDiscard() {
+        for (int i = 1; i <= cardSize; i++) {
+            System.out.print(discardReplacement[i] + " ");
+            if (i % 10 == 0) {
+                System.out.print("| ");
+            }
+        }
+        System.out.println();
     }
 }
