@@ -6,7 +6,7 @@ package mwong.myprojects.rackocomputerplayers;
  * It may expand the range to fill the missing slot and try to keep the cards in sequence
  * for higher score.
  *
- * <p>Dependencies : Player2v2.java, RangeOptimizer.java
+ * <p>Dependencies : Player2.java, RangeOptimizer.java
  *
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
@@ -118,7 +118,7 @@ public class Player3 extends Player2 {
                 aggressivePlayer = true;
             }
         }
-
+		
         // 0 - unknown/drawPile, 1 - discardPile, 2 - self; 4 - player 1, 8 - player 2,
         // 16 - player 3, 32 - unknown player
         for (int i = 0; i < hand.length; i++) {
@@ -149,7 +149,8 @@ public class Player3 extends Player2 {
 
     // review the hand of cards and determine the values to keep or discard.
     protected void reviewHand() {
-        super.clear();
+        rangeMax = new int[rackSize + 2];
+        gapCount = new int[rackSize];
         int possibleCount = 0;
 
         for (int i = 1; i <= cardSize; i++) {
@@ -170,6 +171,9 @@ public class Player3 extends Player2 {
             }
         }
 
+        discardReplacement = new int[cardSize + 1];
+        drawReplacement = new int[cardSize + 1];
+
         int pos = 0;
         int count = 0;
         for (int i = 1; i <= cardSize; i++) {
@@ -188,6 +192,7 @@ public class Player3 extends Player2 {
         rangeMax[rackSize] = cardSize;
         rangeMax[rackSize + 1] = cardSize;
 
+        groupHand = new int[rackSize];
         for (int i = 0; i < rackSize; i++) {
             discardReplacement[value[i]] = cardKey + i;
         }

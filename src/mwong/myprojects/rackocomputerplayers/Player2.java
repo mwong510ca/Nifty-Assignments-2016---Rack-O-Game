@@ -73,35 +73,31 @@ public class Player2 extends AbstractPlayer {
         analyzerFlag = !analyzerFlag;
     }
 
-    protected void clear() {
-        for (int i = 0; i < rangeMax.length; i++) {
-            rangeMax[i] = 0;
-        }
-        for (int i = 0; i < gapCount.length; i++) {
-            gapCount[i] = 0;
-        }
+    private void evenDistribution() {
+    	for (int i = 0; i < possibleHand.length; i++) {
+    		possibleHand[i] = false;
+    	}
+    	for (int i = 0; i < rangeMax.length; i++) {
+    		rangeMax[i] = 0;
+    	}
+    	for (int i = 0; i < gapCount.length; i++) {
+    		gapCount[i] = 0;
+    	}
         for (int i = 1; i <= cardSize; i++) {
             possibleHand[i] = true;
-        }
-        for (int i = 0; i < discardReplacement.length; i++) {
-            discardReplacement[i] = 0;
-        }
-        for (int i = 0; i < drawReplacement.length; i++) {
-            drawReplacement[i] = 0;
-        }
-    }
-
-    // review the hand of cards and determine the values to keep or discard.
-    protected void reviewHand() {
-        clear();
-        for (int i = 0; i < possibleHand.length; i++) {
-            possibleHand[i] = false;
         }
         int countMax = aveRange - 1;
         for (int i = 0; i < rackSize; i++) {
             possibleHand[hand[i]] = false;
             gapCount[i] = countMax;
         }
+
+        for (int i = 0; i < discardReplacement.length; i++) {
+        	discardReplacement[i] = 0;
+    	}
+    	for (int i = 0; i < drawReplacement.length; i++) {
+    		drawReplacement[i] = 0;
+    	}
 
         int pos = 0;
         int count = 0;
@@ -123,8 +119,8 @@ public class Player2 extends AbstractPlayer {
         rangeMax[rackSize + 1] = cardSize;
 
         for (int i = 0; i < groupHand.length; i++) {
-            groupHand[i] = 0;
-        }
+    		groupHand[i] = 0;
+    	}
         for (int i = 0; i < rackSize; i++) {
             discardReplacement[hand[i]] = cardKey + i;
         }
@@ -140,6 +136,11 @@ public class Player2 extends AbstractPlayer {
             }
         }
         updateGroupHand();
+    }
+    
+    // review the hand of cards and determine the values to keep or discard.
+    protected void reviewHand() {
+    	evenDistribution();
         handAnalyze();
     }
 
@@ -163,7 +164,7 @@ public class Player2 extends AbstractPlayer {
 
     // using HandAnalyzer1 to determine the values to keep or discard.
     protected void handAnalyze() {
-        inUseAnalyzer.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
+    	inUseAnalyzer.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
         System.arraycopy(inUseAnalyzer.getRangeMax(), 0, rangeMax, 0, rackSize + 2);
         System.arraycopy(inUseAnalyzer.getGapCount(), 0, gapCount, 0, rackSize);
         System.arraycopy(inUseAnalyzer.getDiscard(), 0, discardReplacement, 0, cardSize + 1);
@@ -324,6 +325,7 @@ public class Player2 extends AbstractPlayer {
         }
         if (count > rackSize - 2 && ! deadlock) {
             deadlock = true;
+            System.out.println("deadlock");
         }
 
         if (deadlock && count > rackSize - 3) {
