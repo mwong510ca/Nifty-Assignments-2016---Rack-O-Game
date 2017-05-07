@@ -96,19 +96,7 @@ public class GatewayServerRackoComputerPlayers {
             throw new ArrayIndexOutOfBoundsException();
         }
         int id = replacementID++;
-        
-        for (int i = 0; i < id; i++) {
-        	if (players[i].getClass() == Player2.class) {
-        		continue;
-        	} else {
-        		players[id] = new Player2(rackoSize);
-        		break;
-        	}
-        }
-        
-        if (players[id] == null) {
-        	players[id] = new Player1(rackoSize);
-        }
+        players[id] = new Player2(rackoSize);		
         return players[id];
     }
 
