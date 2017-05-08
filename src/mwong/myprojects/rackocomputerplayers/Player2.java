@@ -246,7 +246,7 @@ public class Player2 extends AbstractPlayer {
         }
     }
 
-    // When deadlock detected, throw all unsorted cards and sort again.
+    // When deadlock detected, throw all unsorted cards and sort again with reference.
     private boolean referenceSort(byte value, boolean isDiscardCard) {
         for (int i = 0; i < rackSize; i++) {
             if (value == deadlockReference[i]) {
@@ -376,10 +376,10 @@ public class Player2 extends AbstractPlayer {
 
     /**
      * When deck pile is empty, notify the discard pile has turn over to deck pile.
-     * Compare the hand of cards with backup record.  If minimal changes, activated
-     * deadlock to resort the rack.
+     * Compare the hand of cards with backup record.  If minimal changes between pile
+     * turnover; activated deadlock, use current hand as reference to sort the rack again.
      */
-    public void discard2deck() {
+    public void discardTurnover() {
         int count = 0;
         for (int i = 0; i < rackSize; i++) {
             if (hand[i] == backupHand[i]) {

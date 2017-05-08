@@ -113,17 +113,17 @@ class Engine(QThread):
 
     def setDefaultSpeed(self):
         self.speed_deal = 0.1
-        self.speed_play = 0.5
+        self.speed_play = 0.7
         self.delay_new_round = 6
 
     def setFastSpeed(self):
         self.speed_deal = 0.01
-        self.speed_play = 0.2
+        self.speed_play = 0.3
         self.delay_new_round = 4
 
     def setAutoRunSpeed(self):
         self.speed_deal = 0
-        self.speed_play = 0.02
+        self.speed_play = 0.03
         self.delay_new_round = 1
 
     def terminate(self):
@@ -170,7 +170,7 @@ class Engine(QThread):
 
     def setAutoNewRound(self):
         self.action = 4
-        time.sleep(0.2)
+        time.sleep(0.3)
 
     def setAutoContinue(self):
         self.action = 5
@@ -242,7 +242,7 @@ class Engine(QThread):
                 self.player_hand[target_player].insert(0, value)
                 self.player_hand_viewable[target_player].insert(0, 0)
                 self.rackSlotColor.emit(self.player_layout[target_player], slot, 0, False)
-                if self.player_list[target_player] is None:
+                if self.player_name[target_player].startswith('P'):
                     self.rackSlotValue.emit(self.player_layout[target_player], slot, str(value))
                 target_player += 1
                 if target_player == self.number_of_players:
@@ -308,7 +308,7 @@ class Engine(QThread):
     def active_rack(self, player_id):
         layout_id = self.player_layout[player_id]
         is_computer = True
-        if self.player_list[player_id] is None:
+        if self.player_name[player_id].startswith('P'):
             is_computer = False
         for slot in range(self._rack_size):
             if self.show_replacement:
@@ -323,7 +323,7 @@ class Engine(QThread):
     def inactive_rack(self, player_id):
         layout_id = self.player_layout[player_id]
         is_computer = True
-        if self.player_list[player_id] is None:
+        if self.player_name[player_id].startswith('P'):
             is_computer = False
         for slot in range(self._rack_size):
             if self.show_replacement:
@@ -374,7 +374,10 @@ class Engine(QThread):
                 time.sleep(self.speed_play)
 
                 return_value = computer.replace(card_value, False)
-                self.rackSlotValue.emit(layout_id, slot, str(""))
+                if self.player_name[player_id].startswith('C'):
+                    self.rackSlotValue.emit(layout_id, slot, str(""))
+                else:
+                    self.rackSlotValue.emit(layout_id, slot, str(card_value))
                 for other_id in range(self.number_of_players):
                     if self.player_list[other_id] is not None:
                         self.player_list[other_id].playerCard(self.active_player, slot)

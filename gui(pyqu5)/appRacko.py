@@ -234,6 +234,7 @@ class GameRacko(QMainWindow, MainWindow):
         self.actionCustomLimit.setEnabled(True)
         self.actionButton.setText("New Game")
         self.actionButton.setEnabled(True)
+        self.optionView.setEnabled(True)
 
     def setup_players(self):
         while len(self.players_list) > 0:
@@ -398,7 +399,6 @@ class GameRacko(QMainWindow, MainWindow):
     def control_in_action(self, lock):
         if self.auto_run_active:
             self.actionButton.setEnabled(True)
-            self.optionView.setEnabled(True)
         elif lock:
             self.actionButton.setEnabled(False)
             self.optionView.setEnabled(False)
