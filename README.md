@@ -12,24 +12,8 @@ There are 3 level of computer player to choose from:
 * Moderate - Even distribution to fill all slots.  
   Try to keep the numbers in sequence for higher winning points.  
   When detect deadlock, resort the rack.
-  <pre>
-  Example:  2  4  8 18  3 24  7 13 33 39
-               H     H        H  H
-    If the new card is 16, it will place in slot 5.  
-    To sort the slots 3 to 6, either fill slot 4 from 8 - 16 or fill slot 5 from 18 - 24.
-  </pre>
-* Hard - Compare both prioritize option above and pick the best choice.  
-    <pre>
-    Example:  12 25 17 21 31 29 18  2 30 36 
-                                       H  H
-              Replace 17 with 9
-              12 25  9 21 31 29 18  2 30 36
-                     H           H     H  H
-              Replace 2 with 27
-              12 25  9 21 31 29 18 27 30 36 
-                     H              H  H  H
-    </pre>
-  Monitor the changes on discard pile and deck pile.  Sort the rack with eliminate the cards held by other players and prevent deadlock issue.  
+* Hard - Monitor the changes on discard pile and deck pile.  
+  Sort the rack with eliminate the cards held by other players and prevent deadlock issue.  
   Try to keep the numbers in sequence for higher winning points.  
   If too few cards will fill the missing slot, expand the range if possible.  
   When approaching to win such as 475 points, sort minimun 5 slots (+25 points) to win instead of full rack.  
@@ -38,44 +22,52 @@ There are 3 level of computer player to choose from:
 
 ### Comparison of difficulty levels
 Number of win count in 100 rounds, regradless score:
-<pre>
 * 2 players racko:  
-Easy vs Moderate      Easy vs Hard      Moderate vs Hard
-28      72            28      72        40          60
-
-* 3 players racko:  
-Easy vs Moderate vs Hard
-18      30          52
-
+<pre>
+Easy        vs     Moderate
+28                 72
+Easy                               vs     Hard
+28                                        72
+                   Moderate        vs     Hard
+                   40                     60
+</pre>
+* 3 players racko:
+<pre>
+Easy       vs      Moderate        vs     Hard
+18                 30                     52
+</pre>
 * 4 players racko:  
-Easy x2 vs Moderate    vs Hard
-30         32             38
-Easy    vs Moderate x2 vs Hard
-15         48             37
-Easy    vs Moderate    vs Hard x2
-9          22             69
-
+<pre>
+Easy x2    vs      Moderate        vs     Hard
+30 (15)            32                     38
+Easy       vs      Moderate x2     vs     Hard
+15                 48 (24)                37
+Easy       vs      Moderate        vs     Hard x2
+9                  22                     69 (34.5)
+</pre>
 Winning scores distribution based on 100 winning rounds of 3 players game:
+<pre>
               75 pts    125 pts    175 pts    275 pts    475 pts
 Easy          76        20          4          0          0
 Moderate      84        14          2          0          0
 Hard          80        17          2          1          0
- 
+</pre> 
 Losing scores distribution based on 100 losing rounds of 3 players game:
+<pre>
                5   10   15   20   25   30   35   40   45
 Easy           9   23   18    9   11    9    9    8    4
 Moderate      15   20   12   17    5    9   12    7    3
 Hard          10   13    8   12   18   17    7   11    4
-                            
+</pre>                        
 
 Regardless the winner in 100 rounds, number deck turnover to complete:
+<pre>
 Number of deck turnover:    0   1   2   3   4   5   6   7   8   9   10+  
 Moderate vs Easy x3     
 40          60             35  50   7   3   4   0   0   0   0   1   0
 (14 deadlock detected)
 Hard     vs Easy x3
-50          50             57  40   3   0   0   0   0   0   0   0   0
-
+50          50             57  40   3   0   0   0   0   0   0   0   0  
 </pre>
 ### GUI design
 
