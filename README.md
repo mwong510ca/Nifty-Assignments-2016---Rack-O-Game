@@ -99,11 +99,8 @@ For 4 hands and play with 2 sets.  The second set on the right side.
 The user may terminate the game at any time.  
 An option to have a computer player (Moderate level only) take over and finish the remaining game in fast speed.
 
-[Development history]
-
 [Nifty Assignments 2016, Racko]: http://nifty.stanford.edu/2016/arvind-racko/
 [See rules]: http://www.hasbro.com/common/instruct/Racko(1987).PDF
-[Development history]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/older%20versions
 [py4j]: https://www.py4j.org
 [Screenshots]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/screenshots
 [System requirements and installation]: https://github.com/mwong510ca/Racko_ComputerStrategy/tree/master/gui(pyqu5)
