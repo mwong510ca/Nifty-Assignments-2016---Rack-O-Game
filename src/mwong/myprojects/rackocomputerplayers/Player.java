@@ -82,7 +82,7 @@ interface Player {
     /**
      * When deck pile is empty, notify the discard pile has flipped over to deck pile.
      */
-    public void discard2deck();
+    public void discardTurnover();
 
     /**
      * Notify the card has add to discard pile by the given player.

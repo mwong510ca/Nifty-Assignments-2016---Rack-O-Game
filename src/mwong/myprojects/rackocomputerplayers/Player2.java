@@ -3,7 +3,8 @@ package mwong.myprojects.rackocomputerplayers;
 
 /**
  * Player2 extends AbstractPlayer with computer strategy start from even distribution.
- * If fill the card in assigned slot up to +/- 1 neighbor.
+ * If may shift the card +/- one slot.  When detect deadlock, it will throw unsorted cards
+ * from the rack and sort again.
  *
  * <p>Dependencies : AbstractPlayer.java, HandAnalysis1.java
  *
@@ -15,7 +16,6 @@ public class Player2 extends AbstractPlayer {
     protected int[] gapCount;
     protected int[] discardReplacement;
     protected int[] rangeMax;
-    protected int[] drawReplacement;
     protected int aveRange;
     protected int offRange;
     protected int choosePosition;
@@ -27,6 +27,8 @@ public class Player2 extends AbstractPlayer {
     private boolean deadlock;
     private boolean[] possibleHand;
     private boolean analyzerFlag;
+    private int shuffleFirst;
+    private int shuffleLast;
 
     /**
      * Initializes Player2 object.
@@ -41,7 +43,6 @@ public class Player2 extends AbstractPlayer {
         rangeMax = new int[rackSize + 2];
         gapCount = new int[rackSize];
         discardReplacement = new int[cardSize + 1];
-        drawReplacement = new int[cardSize + 1];
         groupHand = new int[rackSize];
         possibleHand = new boolean[cardSize + 1];
         analyzerFlag = true;
@@ -73,16 +74,17 @@ public class Player2 extends AbstractPlayer {
         analyzerFlag = !analyzerFlag;
     }
 
+    // Assign the slots evenly.
     private void evenDistribution() {
-    	for (int i = 0; i < possibleHand.length; i++) {
-    		possibleHand[i] = false;
-    	}
-    	for (int i = 0; i < rangeMax.length; i++) {
-    		rangeMax[i] = 0;
-    	}
-    	for (int i = 0; i < gapCount.length; i++) {
-    		gapCount[i] = 0;
-    	}
+        for (int i = 0; i < possibleHand.length; i++) {
+            possibleHand[i] = false;
+        }
+        for (int i = 0; i < rangeMax.length; i++) {
+            rangeMax[i] = 0;
+        }
+        for (int i = 0; i < gapCount.length; i++) {
+            gapCount[i] = 0;
+        }
         for (int i = 1; i <= cardSize; i++) {
             possibleHand[i] = true;
         }
@@ -93,11 +95,8 @@ public class Player2 extends AbstractPlayer {
         }
 
         for (int i = 0; i < discardReplacement.length; i++) {
-        	discardReplacement[i] = 0;
-    	}
-    	for (int i = 0; i < drawReplacement.length; i++) {
-    		drawReplacement[i] = 0;
-    	}
+            discardReplacement[i] = 0;
+        }
 
         int pos = 0;
         int count = 0;
@@ -119,8 +118,8 @@ public class Player2 extends AbstractPlayer {
         rangeMax[rackSize + 1] = cardSize;
 
         for (int i = 0; i < groupHand.length; i++) {
-    		groupHand[i] = 0;
-    	}
+            groupHand[i] = 0;
+        }
         for (int i = 0; i < rackSize; i++) {
             discardReplacement[hand[i]] = cardKey + i;
         }
@@ -137,10 +136,10 @@ public class Player2 extends AbstractPlayer {
         }
         updateGroupHand();
     }
-    
+
     // review the hand of cards and determine the values to keep or discard.
     protected void reviewHand() {
-    	evenDistribution();
+        evenDistribution();
         handAnalyze();
     }
 
@@ -162,9 +161,9 @@ public class Player2 extends AbstractPlayer {
         }
     }
 
-    // using HandAnalyzer1 to determine the values to keep or discard.
+    // using HandAnalyzer to determine the values to keep or discard.
     protected void handAnalyze() {
-    	inUseAnalyzer.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
+        inUseAnalyzer.analysisNow(hand, groupHand, gapCount, discardReplacement, rangeMax);
         System.arraycopy(inUseAnalyzer.getRangeMax(), 0, rangeMax, 0, rackSize + 2);
         System.arraycopy(inUseAnalyzer.getGapCount(), 0, gapCount, 0, rackSize);
         System.arraycopy(inUseAnalyzer.getDiscard(), 0, discardReplacement, 0, cardSize + 1);
@@ -191,7 +190,7 @@ public class Player2 extends AbstractPlayer {
     public boolean determineUse(byte value, boolean isDiscardCard) {
         choosePosition = -1;
         if (deadlock) {
-            return referenceSort(value);
+            return referenceSort(value, isDiscardCard);
         }
         reviewHand();
         secondCheck(value, isDiscardCard);
@@ -199,26 +198,19 @@ public class Player2 extends AbstractPlayer {
     }
 
     // Determine the use of the card to be replaced.
-    protected boolean hasReplacement(byte value, boolean isDiscardCard) {
+    protected boolean hasReplacement(byte value) {
         int replacement = discardReplacement[value];
 
         if (replacement > -1 && replacement < rackSize) {
             choosePosition = replacement;
             return true;
         }
-        if (!isDiscardCard) {
-            replacement = drawReplacement[value];
-            if (replacement > -1 && replacement < rackSize) {
-                choosePosition = replacement;
-                return true;
-            }
-        }
         return false;
     }
 
-    // Demonstrate the replacement and reivew it, make sure sorted order will not reduce.
+    // Review hand after card replacement, make sure sorted order will not reduce.
     private void secondCheck(byte value, boolean isDiscardCard) {
-        boolean secondCheck = hasReplacement(value, isDiscardCard);
+        boolean secondCheck = hasReplacement(value);
         if (!secondCheck) {
             return;
         }
@@ -254,7 +246,8 @@ public class Player2 extends AbstractPlayer {
         }
     }
 
-    private boolean referenceSort(byte value) {
+    // When deadlock detected, throw all unsorted cards and sort again.
+    private boolean referenceSort(byte value, boolean isDiscardCard) {
         for (int i = 0; i < rackSize; i++) {
             if (value == deadlockReference[i]) {
                 choosePosition = i;
@@ -263,25 +256,95 @@ public class Player2 extends AbstractPlayer {
         }
 
         for (int i = 0; i < rackSize; i++) {
-            int refValue = deadlockReference[i];
-            if (hand[i] != refValue) {
-                for (int j = 0; j < rackSize; j++) {
-                    if (hand[j] == refValue) {
+            int ref = deadlockReference[i];
+            for (int j = 0; j < rackSize; j++) {
+                if (ref == hand[j]) {
+                    if (i != j) {
+                        if (shuffleFirst == -1) {
+                            shuffleFirst = i;
+                        }
+                        shuffleLast = i;
                         choosePosition = j;
                         return true;
                     }
+                    break;
                 }
             }
         }
 
-        for (int i = 0; i < rackSize; i++) {
-            if (value < deadlockReference[i]) {
-                choosePosition = i;
-                return true;
+        if (hand[0] != deadlockReference[0] && value < deadlockReference[0]) {
+            deadlockReference[0] = hand[0];
+        }
+
+        if (hand[rackSize - 1] != deadlockReference[rackSize - 1]
+                && value > deadlockReference[rackSize - 1]) {
+            deadlockReference[rackSize - 1] = hand[rackSize - 1];
+        }
+
+        for (int i = shuffleFirst; i < shuffleLast; i++) {
+            if (hand[i] == deadlockReference[i]) {
+                continue;
+            } else if (i == 0) {
+                break;
+            } else if (hand[i - 1] < hand[i] && hand[i] < deadlockReference[i]) {
+                deadlockReference[i] = hand[i];
+            } else {
+                break;
             }
         }
-        choosePosition = rackSize - 1;
-        return true;
+
+        for (int i = shuffleLast; i > shuffleFirst; i--) {
+            if (hand[i] == deadlockReference[i]) {
+                continue;
+            } else if (i == rackSize - 1) {
+                break;
+            } else if (hand[i] < hand[i + 1] && hand[i] > deadlockReference[i]) {
+                deadlockReference[i] = hand[i];
+            } else {
+                break;
+            }
+        }
+
+        int min = 0;
+        boolean backward = true;
+        for (int i = 0; i < rackSize; i++) {
+            if (backward && hand[i] != deadlockReference[i]) {
+                backward = false;
+            }
+
+            if (value < deadlockReference[i]) {
+                if (hand[i] < min || hand[i] > deadlockReference[i]) {
+                    deadlockReference[i] = value;
+                    choosePosition = i;
+                    return true;
+                } else if (i > 0 && hand[i - 1] != deadlockReference[i - 1]) {
+                    deadlockReference[i - 1] = value;
+                    choosePosition = i - 1;
+                    return true;
+                } else if (isDiscardCard) {
+                    return false;
+                }
+
+                if (backward) {
+                    deadlockReference[i] = value;
+                    choosePosition = i;
+                    return true;
+                }
+                if (!backward && i > 0) {
+                    deadlockReference[i - 1] = value;
+                    choosePosition = i - 1;
+                    return true;
+                }
+            }
+            min = deadlockReference[i];
+        }
+
+        if (!isDiscardCard) {
+            deadlockReference[rackSize - 1] = value;
+            choosePosition = rackSize - 1;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -312,9 +375,9 @@ public class Player2 extends AbstractPlayer {
     }
 
     /**
-     * When deck pile is empty, notify the discard pile has flipped over to deck pile.
-     * Compare the hand of cards with backup record.  If none of changed, activated
-     * trigger to shift the card to prevent deadlock.
+     * When deck pile is empty, notify the discard pile has turn over to deck pile.
+     * Compare the hand of cards with backup record.  If minimal changes, activated
+     * deadlock to resort the rack.
      */
     public void discard2deck() {
         int count = 0;
@@ -323,12 +386,13 @@ public class Player2 extends AbstractPlayer {
                 count++;
             }
         }
-        if (count > rackSize - 2 && ! deadlock) {
+
+        if (count > rackSize - 2 && !deadlock) {
             deadlock = true;
-            System.out.println("deadlock");
         }
 
         if (deadlock && count > rackSize - 3) {
+            shuffleFirst = -1;
             deadlockReference[0] = hand[0];
             for (int i = 1; i < rackSize; i++) {
                 byte val = hand[i];
@@ -344,15 +408,5 @@ public class Player2 extends AbstractPlayer {
             }
         }
         System.arraycopy(hand, 0, backupHand, 0, rackSize);
-    }
-
-    protected void printDiscard() {
-        for (int i = 1; i <= cardSize; i++) {
-            System.out.print(discardReplacement[i] + " ");
-            if (i % 10 == 0) {
-                System.out.print("| ");
-            }
-        }
-        System.out.println();
     }
 }

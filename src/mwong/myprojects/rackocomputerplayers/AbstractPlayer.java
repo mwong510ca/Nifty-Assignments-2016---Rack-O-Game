@@ -93,7 +93,7 @@ abstract class AbstractPlayer implements Player {
     /**
      * When deck pile is empty, notify the discard pile has flipped over to deck pile.
      */
-    public void discard2deck() {
+    public void discardTurnover() {
         // do nothing
     }
 

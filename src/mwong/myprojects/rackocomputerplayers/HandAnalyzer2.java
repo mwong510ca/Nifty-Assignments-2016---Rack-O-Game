@@ -2,7 +2,7 @@ package mwong.myprojects.rackocomputerplayers;
 
 
 /**
- * HandAnalyzer3 extends AbstractHandAnalyzer with main analysis function.
+ * HandAnalyzer2 extends AbstractHandAnalyzer with main analysis function.
  *
  * <p>Dependencies : AbstractHandAnalyzer.java
  *

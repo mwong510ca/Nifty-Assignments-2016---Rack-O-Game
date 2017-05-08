@@ -40,7 +40,7 @@ public class GatewayServerRackoComputerPlayers {
         numberOfPlayers = total;
         replacementID = total;
         for (int i = 0; i < maxPlayers; i++) {
-        	players[i] = null;
+            players[i] = null;
         }
     }
 
@@ -96,7 +96,7 @@ public class GatewayServerRackoComputerPlayers {
             throw new ArrayIndexOutOfBoundsException();
         }
         int id = replacementID++;
-        players[id] = new Player2(rackoSize);		
+        players[id] = new Player2(rackoSize);
         return players[id];
     }
 

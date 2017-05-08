@@ -28,7 +28,7 @@ class Engine(QThread):
     actionLock = pyqtSignal(bool)
     humanPlay = pyqtSignal(int)
     autoRoundEnd = pyqtSignal()
-    autoBreak = pyqtSignal()
+    autoPileTurnover = pyqtSignal()
     engineStop = pyqtSignal()
 
     def __init__(self, size, winning_score):
@@ -281,7 +281,7 @@ class Engine(QThread):
         if len(self.deck) == 0:
             for player in self.player_list:
                 if player is not None:
-                    player.discard2deck()
+                    player.discardTurnover()
             while len(self.deck_discard) > 0:
                 value = self.deck_discard[-1]
                 self.deck_discard.remove(value)
@@ -499,7 +499,7 @@ class Engine(QThread):
                 if self.auto_run and self.auto_break_on:
                     self.active_player = player_id
                     self._isRunning = False
-                    self.autoBreak.emit()
+                    self.autoPileTurnover.emit()
                 else:
                     self.computer_play(player_id)
             else:

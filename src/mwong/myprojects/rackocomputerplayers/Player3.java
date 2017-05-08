@@ -2,9 +2,11 @@ package mwong.myprojects.rackocomputerplayers;
 
 
 /**
- * Player2 extends Playerv2 with take the best choice between HandAnalysis1 and HandAnalysis2.
- * It may expand the range to fill the missing slot and try to keep the cards in sequence
- * for higher score.
+ * Player3 extends Player2 with take the best choice between HandAnalysis1 and HandAnalysis2.
+ * It monitor the pile changes to make better decision and prevent deadlock issue.  It may
+ * expand the range to fill the missing slot and try to keep the cards in sequence for
+ * higher score.  If player3 is going to win the game, it will sort the minimum slots to
+ * make winning scores instead of full rack.
  *
  * <p>Dependencies : Player2.java, RangeOptimizer.java
  *
@@ -18,7 +20,7 @@ public class Player3 extends Player2 {
     private int deckIdx;
     private byte[] cardsStatus;
     protected boolean aggressivePlayer;
-    private boolean predictNextCard;
+    private boolean predictDeckCard;
     private boolean expandRange;
     private boolean almostWin;
     private int idShift;
@@ -27,6 +29,7 @@ public class Player3 extends Player2 {
     private int myScore;
     private int[] otherScores;
     private RangeOptimizer optimizer;
+    private int[] deckReplacement;
 
     /**
      * Initializes Player3 object.
@@ -40,10 +43,11 @@ public class Player3 extends Player2 {
         discardPile = new int[20];
         deckIdx = -1;
         discardCount = 0;
-        predictNextCard = false;
+        predictDeckCard = false;
         cardsStatus = new byte[cardSize + 1];
         otherScores = new int[numPlayer - 1];
         aggressivePlayer = true;
+        deckReplacement = new int[cardSize + 1];
     }
 
     /**
@@ -105,8 +109,13 @@ public class Player3 extends Player2 {
 
         aggressivePlayer = !aggressivePlayer;
         almostWin = false;
-        if (myScore + 45 >= winScore && otherScore2win + 75 < winScore) {
-            almostWin = true;
+
+        if (myScore + 45 >= winScore) {
+            if (otherScore2win + 75 < winScore) {
+                almostWin = true;
+            } else if (myScore + 75 > otherScore2win + 45) {
+                aggressivePlayer = false;
+            }
         } else if (myScore + 75 >= winScore) {
             if (otherScore2win + 150 < myScore) {
                 almostWin = true;
@@ -118,7 +127,7 @@ public class Player3 extends Player2 {
                 aggressivePlayer = true;
             }
         }
-		
+
         // 0 - unknown/drawPile, 1 - discardPile, 2 - self; 4 - player 1, 8 - player 2,
         // 16 - player 3, 32 - unknown player
         for (int i = 0; i < hand.length; i++) {
@@ -138,7 +147,7 @@ public class Player3 extends Player2 {
         }
         deckIdx = -1;
         discardCount = 0;
-        predictNextCard = false;
+        predictDeckCard = false;
         for (int i = 0; i < cardsStatus.length; i++) {
             cardsStatus[i] = 0;
         }
@@ -171,8 +180,12 @@ public class Player3 extends Player2 {
             }
         }
 
-        discardReplacement = new int[cardSize + 1];
-        drawReplacement = new int[cardSize + 1];
+        for (int i = 0; i < discardReplacement.length; i++) {
+            discardReplacement[i] = 0;
+        }
+        for (int i = 0; i < deckReplacement.length; i++) {
+            deckReplacement[i] = 0;
+        }
 
         int pos = 0;
         int count = 0;
@@ -243,10 +256,10 @@ public class Player3 extends Player2 {
     private void optimizeRange(boolean expandRange) {
         if (offRange > 0) {
             optimizer.optimizeNow(offRange, aggressivePlayer, hand, gapCount, rangeMax,
-                    discardReplacement, drawReplacement);
+                    discardReplacement, deckReplacement);
         }
         if (expandRange) {
-            optimizer.optimizeMore(aveRange, hand, gapCount, discardReplacement, drawReplacement);
+            optimizer.optimizeMore(aveRange, hand, gapCount, discardReplacement, deckReplacement);
         }
     }
 
@@ -270,7 +283,7 @@ public class Player3 extends Player2 {
         reviewHand();
         if (offRange > 0) {
             optimizer.optimizeNow(offRange, aggressivePlayer, hand, gapCount, rangeMax,
-                    discardReplacement, drawReplacement);
+                    discardReplacement, deckReplacement);
         }
 
         if (offRange == 1) {
@@ -281,7 +294,7 @@ public class Player3 extends Player2 {
             if (sum < aveRange * 2) {
                 expandRange = true;
                 optimizer.optimizeMore(aveRange, hand, gapCount, discardReplacement,
-                        drawReplacement);
+                        deckReplacement);
             }
         }
 
@@ -294,6 +307,25 @@ public class Player3 extends Player2 {
         return (choosePosition >= 0 && choosePosition < rackSize);
     }
 
+    // Determine the use of the card to be replaced.
+    private boolean hasReplacement(byte value, boolean isDiscardCard) {
+        if (super.hasReplacement(value)) {
+            return true;
+        }
+
+        if (!isDiscardCard) {
+            int replacement = deckReplacement[value];
+            if (replacement > -1 && replacement < rackSize) {
+                choosePosition = replacement;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Review hand after card replacement, make sure sorted order will not reduce.
+    // If deck pile is predictable, pick the better choice between deck card and
+    // discard card.
     private void secondCheck(byte value, boolean isDiscardCard) {
         boolean secondCheck = hasReplacement(value, isDiscardCard);
         if (!secondCheck) {
@@ -338,7 +370,7 @@ public class Player3 extends Player2 {
         reviewHand();
 
         if (newOffRange <= currOffRange) {
-            if (newOffRange == 0 || !isDiscardCard || !predictNextCard) {
+            if (newOffRange == 0 || !isDiscardCard || !predictDeckCard) {
                 choosePosition = replacement;
                 return;
             }
@@ -501,7 +533,7 @@ public class Player3 extends Player2 {
     /**
      * When deck pile is empty, notify the discard pile has flipped over to deck pile.
      */
-    public void discard2deck() {
+    public void discardTurnover() {
         for (int i = 1; i <= cardSize; i++) {
             if (cardsStatus[i] == 0) {
                 cardsStatus[i] = 32;
@@ -513,7 +545,7 @@ public class Player3 extends Player2 {
         System.arraycopy(discardPile, 0, deckPile, 0, 20);
         deckIdx = 0;
         discardCount = 0;
-        predictNextCard = true;
+        predictDeckCard = true;
     }
 
     /**
