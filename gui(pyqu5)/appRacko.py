@@ -207,6 +207,8 @@ class GameRacko(QMainWindow, MainWindow):
             if reply == QMessageBox.Yes:
                 self.game_computer_take_over()
             elif reply == QMessageBox.No:
+                self.refresh_game_status("")
+                self.refresh_game_status("*** Game terminate by user ***")
                 self.game_terminate()
         else:
             self.layout_reset()
@@ -225,6 +227,7 @@ class GameRacko(QMainWindow, MainWindow):
     def game_terminate(self):
         self.game_active = False
         self.auto_run_active = False
+        self.Deck_pile_lock = True
         self.headingSetup.setEnabled(True)
         self.requirePlayer2.setEnabled(True)
         self.optionPlayer3.setEnabled(True)
@@ -386,7 +389,7 @@ class GameRacko(QMainWindow, MainWindow):
         for line_number in range(5, -1, -1):
             msg = "<BR>" + self.status_line[line_number] + msg
             self.status_line[line_number + 1] = self.status_line[line_number]
-        self.status_line[0] = line
+        self.status_line[0] = "" + line
         msg = line + msg
         self.statusGame.setText(msg)
 
@@ -410,16 +413,17 @@ class GameRacko(QMainWindow, MainWindow):
             self.optionView.setEnabled(True)
 
     def pick_card(self, layout_id, slot):
-        if layout_id == 1 and not self.layout1_lock:
-            self._game_engine.humanResponse(slot - 1)
-            self.use_discard_card = False
-            self.layout1_lock = True
-            self._game_engine.start()
-        elif layout_id == 3 and not self.layout3_lock:
-            self._game_engine.humanResponse(slot - 1)
-            self.use_discard_card = False
-            self.layout3_lock = True
-            self._game_engine.start()
+        if self.game_active:
+            if layout_id == 1 and not self.layout1_lock:
+                self._game_engine.humanResponse(slot - 1)
+                self.use_discard_card = False
+                self.layout1_lock = True
+                self._game_engine.start()
+            elif layout_id == 3 and not self.layout3_lock:
+                self._game_engine.humanResponse(slot - 1)
+                self.use_discard_card = False
+                self.layout3_lock = True
+                self._game_engine.start()
 
     def deck_pile_action(self):
         if not self.Deck_pile_lock:

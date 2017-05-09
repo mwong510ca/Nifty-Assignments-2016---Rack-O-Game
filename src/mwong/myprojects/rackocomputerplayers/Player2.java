@@ -6,7 +6,7 @@ package mwong.myprojects.rackocomputerplayers;
  * If may shift the card +/- one slot.  When detect deadlock, it will throw unsorted cards
  * from the rack and sort again.
  *
- * <p>Dependencies : AbstractPlayer.java, HandAnalysis1.java
+ * <p>Dependencies : AbstractPlayer.java, HandAnalysis1.java, HandAnalysis2.java
  *
  * @author Meisze Wong
  *         www.linkedin.com/pub/macy-wong/46/550/37b/
