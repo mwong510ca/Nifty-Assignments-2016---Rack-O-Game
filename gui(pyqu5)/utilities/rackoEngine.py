@@ -171,14 +171,12 @@ class Engine(QThread):
         self.player_list.insert(player_id, computer_player)
 
     def setAutoNewRound(self):
-        while self._wait:
-            time.sleep(0.05)
-        self._isRunning = False
         self.action = 4
+        self._isRunning = False
 
     def setAutoContinue(self):
-        self._isRunning = False
         self.action = 5
+        self._isRunning = False
 
     def run(self):
         self.actionLock.emit(True)
@@ -214,7 +212,8 @@ class Engine(QThread):
             self.new_round()
         elif self.action == 5:
             self.computer_play(self.active_player)
-        self._isRunning = False
+        else:
+            print("no action")
 
     def isRunning(self):
         return self._isRunning
@@ -282,7 +281,7 @@ class Engine(QThread):
         for player in self.player_list:
             if player is not None:
                 player.discardAdd(value, self.active_player)
-        self.auto_break_on = False
+        self.turnover_break = False
         if len(self.deck) == 0:
             for player in self.player_list:
                 if player is not None:
@@ -295,7 +294,7 @@ class Engine(QThread):
             self.active_player = -1
             self.addToDiscard(self.dealCard())
             self.active_player = backup_player
-            self.auto_break_on = True
+            self.turnover_break = True
         time.sleep(self.speed_play)
 
     def removeFromDiscard(self):
@@ -455,7 +454,8 @@ class Engine(QThread):
                 time.sleep(self.speed_play)
                 self.gameStatus.emit(self.player_name[player_id] + ": Replace top deck card "
                                      + " with " + str(return_value) + " at slot " + str(slot + 1) + ".")
-        self.check_racko(player_id)
+            self.check_racko(player_id)
+        self._isRunning = False
 
     def humanDeck(self):
         self.human_discard_card = -1
@@ -483,12 +483,10 @@ class Engine(QThread):
                 print(string)
 
             self.is_active = False
-            self._wait = True
             self.score_update()
+
             if not self.game_end:
                 time.sleep(self.delay_new_round)
-                while self._wait:
-                    time.sleep(0.05)
                 if self.auto_run:
                     self.autoRoundEnd.emit()
                 else:
@@ -507,6 +505,7 @@ class Engine(QThread):
                 self.actionLock.emit(False)
                 print(str(self.player_scores))
                 self.engineStop.emit()
+                self._isRunning = False
         else:
             self.inactive_rack(player_id)
             player_id += 1
@@ -515,7 +514,7 @@ class Engine(QThread):
             if player_id == self.starting_player:
                 self.gameStatus.emit("")
             if self.player_list[player_id] is not None:
-                if self.auto_run and self.auto_break_on:
+                if self.turnover_break:
                     self.active_player = player_id
                     self.autoPileTurnover.emit()
                 else:
@@ -584,7 +583,6 @@ class Engine(QThread):
             for player_id in range(self.number_of_players):
                 if self.player_list[player_id] is not None:
                     self.player_list[player_id].setPlayerScore(score_id, self.player_scores[score_id])
-        self._wait = False
 
     def score_others(self, player_id):
         value = self.player_hand[player_id][0]

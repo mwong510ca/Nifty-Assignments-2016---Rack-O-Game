@@ -42,6 +42,7 @@ SIZE_RACKO3 = 50
 SIZE_RACKO4 = 60
 SIZE_MAX_PLAYERS = 4
 SIZE_RACK = 10
+INTERMISSION = 0.01
 
 
 class GameRacko(QMainWindow, MainWindow):
@@ -205,6 +206,7 @@ class GameRacko(QMainWindow, MainWindow):
                                          'Yes - finish remaining game in fast speed',
                                          QMessageBox.Cancel | QMessageBox.Yes | QMessageBox.No, QMessageBox.Cancel)
             if reply == QMessageBox.Yes:
+                #self.optionView.setEnabled(False)
                 self.game_computer_take_over()
             elif reply == QMessageBox.No:
                 self.refresh_game_status("")
@@ -481,11 +483,13 @@ class GameRacko(QMainWindow, MainWindow):
     def auto_round_end(self):
         if self.game_active:
             self._game_engine.setAutoNewRound()
+            time.sleep(INTERMISSION)
             self._game_engine.start()
 
     def auto_pile_turnover(self):
         if self.game_active:
             self._game_engine.setAutoContinue()
+            time.sleep(INTERMISSION)
             self._game_engine.start()
 
     def about_racko(self):
