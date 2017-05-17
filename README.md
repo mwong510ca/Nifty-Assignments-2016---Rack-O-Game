@@ -11,7 +11,7 @@ There are 3 level of computer player to choose from:
        Written by Arvind Bhusnurmath, Kristen Gee, and Karen Her - copied from [Nifty assignments 2016, Racko]
 * Moderate - Even distribution to fill all slots.  
   Try to keep the numbers in sequence for higher winning points.  
-  When detect deadlock, resort the rack.
+  When detect deadlock, throw the unsorted cards then sort the rack again.
 * Hard - Monitor the changes on discard pile and deck pile.  
   Sort the rack with eliminate the cards held by other players and prevent deadlock issue.  
   Try to keep the numbers in sequence for higher winning points.  
