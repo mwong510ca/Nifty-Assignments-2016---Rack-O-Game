@@ -206,7 +206,6 @@ class GameRacko(QMainWindow, MainWindow):
                                          'Yes - finish remaining game in fast speed',
                                          QMessageBox.Cancel | QMessageBox.Yes | QMessageBox.No, QMessageBox.Cancel)
             if reply == QMessageBox.Yes:
-                #self.optionView.setEnabled(False)
                 self.game_computer_take_over()
             elif reply == QMessageBox.No:
                 self.refresh_game_status("")
@@ -575,4 +574,3 @@ if __name__ == "__main__":
         gateway_server.shutdown()
         p.kill()
         sys.exit()
-
