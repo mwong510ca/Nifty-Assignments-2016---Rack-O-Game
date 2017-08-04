@@ -370,7 +370,6 @@ class Engine(QThread):
             time.sleep(self.speed_play)
             self.gameStatus.emit(self.player_name[player_id] + ": Replace discard card "
                                  + str(card_value) + " with " + str(return_value) + " at slot " + str(slot + 1) + ".")
-            self.check_racko(player_id, True)
         else:
             card_value = self.dealCard()
             self.deckPile.emit(len(self.deck), 0, False)
@@ -392,18 +391,16 @@ class Engine(QThread):
                 for other_id in range(self.number_of_players):
                     if self.player_list[other_id] is not None:
                         self.player_list[other_id].playerCard(self.active_player, slot)
-                        
                 self.addToDiscard(return_value)
                 time.sleep(self.speed_play)
                 self.gameStatus.emit(self.player_name[player_id] + ": Replace top deck card "
                                      + " with " + str(return_value) + " at slot " + str(slot + 1) + ".")
-                self.check_racko(player_id, True)
             else:
                 self.addToDiscard(card_value)
                 time.sleep(self.speed_play)
                 self.gameStatus.emit(self.player_name[player_id] + ": Place Deck card "
                                      + str(card_value) + " in discard pile.")
-                self.check_racko(player_id, False)
+        self.check_racko(player_id)
 
     def human_play(self, player_id):
         self.active_player = player_id
@@ -422,7 +419,6 @@ class Engine(QThread):
 
             self.gameStatus.emit(self.player_name[player_id] + ": Place top deck card "
                                  + str(self.human_Deck_card) + " in discard pile.")
-            self.check_racko(player_id, False)
         else:
             return_value = self.player_hand[player_id][slot]
             layout_id = self.player_layout[player_id]
@@ -458,7 +454,7 @@ class Engine(QThread):
                 time.sleep(self.speed_play)
                 self.gameStatus.emit(self.player_name[player_id] + ": Replace top deck card "
                                      + " with " + str(return_value) + " at slot " + str(slot + 1) + ".")
-            self.check_racko(player_id, True)
+            self.check_racko(player_id)
         self._isRunning = False
 
     def humanDeck(self):
@@ -466,16 +462,15 @@ class Engine(QThread):
         self.human_Deck_card = self.dealCard()
         self.deckPile.emit(len(self.deck), self.human_Deck_card, True)
 
-    def check_racko(self, player_id, card_replacedd):
+    def check_racko(self, player_id):
         round_end = True
-        if card_replacedd:
-            value = self.player_hand[player_id][0]
-            for slot in range(1, self._rack_size):
-                if value < self.player_hand[player_id][slot]:
-                    value = self.player_hand[player_id][slot]
-                else:
-                    round_end = False
-                    break
+        value = self.player_hand[player_id][0]
+        for slot in range(1, self._rack_size):
+            if value < self.player_hand[player_id][slot]:
+                value = self.player_hand[player_id][slot]
+            else:
+                round_end = False
+                break
         if round_end:
             print()
             for hand in self.player_hand:
