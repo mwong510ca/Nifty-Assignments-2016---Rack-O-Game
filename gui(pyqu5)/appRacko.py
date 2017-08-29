@@ -373,7 +373,8 @@ class GameRacko(QMainWindow, MainWindow):
                 self.headingDiscardPile.setText("Computer reviewing top deck card")
                 self.imgDiscardPile.setPixmap(self._cards_files.backcard())
         else:
-            self.headingDiscardPile.setText("Discard Pile")
+            self.headingDiscardPile.setText("Discard Pile (empty)")
+            self.imgDiscardPile.setPixmap(self._cards_files.card_number(0))
 
     def change_slot_color(self, layout_id, slot, color_code, active_state):
         if active_state:

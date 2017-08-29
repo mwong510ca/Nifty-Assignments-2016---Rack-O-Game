@@ -88,12 +88,6 @@ class Engine(QThread):
                 player_str = player_str + " -> " + player_name[idx]
         print(player_str)
 
-        self.counter_75 = 0
-        self.counter_125 = 0
-        self.counter_175 = 0
-        self.counter_275 = 0
-        self.counter_475 = 0
-
         self.player_list = player_list
         self.player_name = player_name
         self.player_layout = player_layout
@@ -114,17 +108,17 @@ class Engine(QThread):
         self._winning_score = winning_score
 
     def setDefaultSpeed(self):
-        self.speed_deal = 0.1
+        self.speed_deal = 0.2
         self.speed_play = 0.7
         self.delay_new_round = 6
 
     def setFastSpeed(self):
-        self.speed_deal = 0.01
+        self.speed_deal = 0.1
         self.speed_play = 0.3
         self.delay_new_round = 4
 
     def setAutoRunSpeed(self):
-        self.speed_deal = 0
+        self.speed_deal = 0.05
         self.speed_play = 0.03
         self.delay_new_round = 1
 
@@ -230,6 +224,8 @@ class Engine(QThread):
                 val2 = self.deck[idx1]
                 self.deck[idx1] = val
                 self.deck.append(val2)
+        self.deckPile.emit(len(self.deck), -1, False)
+        self.discardPile.emit(0, -1, False)
 
     def deal_hand(self):
         self.player_hand = []
@@ -283,6 +279,7 @@ class Engine(QThread):
                 player.discardAdd(value, self.active_player)
         self.turnover_break = False
         if len(self.deck) == 0:
+            time.sleep(self.speed_play)
             for player in self.player_list:
                 if player is not None:
                     player.discardTurnover()
@@ -292,6 +289,9 @@ class Engine(QThread):
                 self.deck.append(value)
             backup_player = self.active_player
             self.active_player = -1
+            self.deckPile.emit(len(self.deck), -1, False)
+            self.discardPile.emit(0, -1, False)
+            time.sleep(self.speed_play)
             self.addToDiscard(self.dealCard())
             self.active_player = backup_player
             self.turnover_break = True
@@ -531,7 +531,6 @@ class Engine(QThread):
 
     def new_round(self):
         if self._isRunning:
-            self.counter_turns = 0
             for player_id in range(self.number_of_players):
                 if self.player_list[player_id] is not None:
                     self.player_list[player_id].reset()
@@ -561,16 +560,6 @@ class Engine(QThread):
                 score = str(self.score_racko(player_id))
                 print_scores += score + " "
                 round_scores = round_scores + self.player_name[player_id] + " - " + score + "  "
-                if score == "75":
-                    self.counter_75 = self.counter_75 + 1
-                elif score == "125":
-                    self.counter_125 = self.counter_125 + 1
-                elif score == "175":
-                    self.counter_175 = self.counter_175 + 1
-                elif score == "275":
-                    self.counter_275 = self.counter_275 + 1
-                elif score == "475":
-                    self.counter_475 = self.counter_475 + 1
             else:
                 score = str(self.score_others(player_id))
                 print_scores += score + " "
