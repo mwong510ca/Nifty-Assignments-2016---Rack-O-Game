@@ -153,7 +153,7 @@ class Engine(QThread):
             player_id += 2;
             if player_id == self.number_of_players:
                 player_id = 0
-        print(self.player_name[player_id] + " replace with " + str(computer_player))
+        print("Computer (" + str(computer_player) + ") take over " + self.player_name[player_id])
         self.action = 3
         computer_player.reset()
         computer_player.setHand(bytearray(self.player_hand[player_id]))
